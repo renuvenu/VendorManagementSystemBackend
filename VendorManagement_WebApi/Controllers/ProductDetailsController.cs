@@ -6,8 +6,7 @@ using Repository;
 
 namespace VendorManagement_WebApi.Controllers
 {
-    public class ProductDetails : Controller
-    {
+    
         [ApiController]
         [Route("api/[Controller]")]
         public class ProductDetailsController : Controller
@@ -22,7 +21,7 @@ namespace VendorManagement_WebApi.Controllers
 
             public async Task<IActionResult> GetProductDetail()
             {
-                return Ok(await productdetailDBContext1.ProductDetails.ToListAsync());
+                return Ok(await productdetailDBContext1.productDetails.ToListAsync());
             }
 
             [HttpPost]
@@ -40,7 +39,7 @@ namespace VendorManagement_WebApi.Controllers
                     productdetail.ProductDescription = insertProductDetailRequest.ProductDescription;
 
 
-                    await productdetailDBContext1.ProductDetails.AddAsync(productdetail);
+                    await productdetailDBContext1.productDetails.AddAsync(productdetail);
                     await productdetailDBContext1.SaveChangesAsync();
 
                     return Ok(productdetail);
@@ -60,7 +59,7 @@ namespace VendorManagement_WebApi.Controllers
 
                 if (updateProductDetailRequest != null)
                 {
-                    var productdetailResult = await productdetailDBContext1.ProductDetails.FirstOrDefaultAsync(x => x.Id.Equals(Id));
+                    var productdetailResult = await productdetailDBContext1.productDetails.FirstOrDefaultAsync(x => x.Id.Equals(Id));
 
                     if (productdetailResult != null)
                     {
@@ -69,7 +68,7 @@ namespace VendorManagement_WebApi.Controllers
                         productdetailResult.Price = updateProductDetailRequest.Price;
                         productdetailResult.ProductDescription = updateProductDetailRequest.ProductDescription;
 
-                        productdetailDBContext1.ProductDetails.Update(productdetailResult);
+                        productdetailDBContext1.productDetails.Update(productdetailResult);
 
                         await productdetailDBContext1.SaveChangesAsync();
                     }
@@ -87,18 +86,18 @@ namespace VendorManagement_WebApi.Controllers
             [Route("{Id}")]
             public async Task<IActionResult> GetElementById([FromRoute] Guid Id)
             {
-                return await Task.FromResult<IActionResult>(Ok(productdetailDBContext1.ProductDetails.Where(x => x.Id.Equals(Id))));
+                return await Task.FromResult<IActionResult>(Ok(productdetailDBContext1.productDetails.Where(x => x.Id.Equals(Id))));
             }
 
             [HttpDelete]
             [Route("{Id:guid}")]
             public async Task<IActionResult> DeletePersonDetail([FromRoute] Guid Id)
             {
-                var productdetailResult = productdetailDBContext1.ProductDetails.FirstOrDefault(x => x.Id.Equals(Id));
+                var productdetailResult = productdetailDBContext1.productDetails.FirstOrDefault(x => x.Id.Equals(Id));
 
                 if (productdetailResult != null)
                 {
-                    productdetailDBContext1.ProductDetails.Remove(productdetailResult);
+                    productdetailDBContext1.productDetails.Remove(productdetailResult);
                     await productdetailDBContext1.SaveChangesAsync();
                 }
 
@@ -108,4 +107,4 @@ namespace VendorManagement_WebApi.Controllers
 
         }
     }
-}
+
