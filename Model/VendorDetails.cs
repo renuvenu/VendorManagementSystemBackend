@@ -5,6 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+public enum VendorType
+{
+    Service,
+    Product,
+    Service_and_Product
+}
 namespace Model
 {
     public class VendorDetails
@@ -16,6 +22,8 @@ namespace Model
         public string? VendorName { get; set; }
         [Required]
         public bool IsActive { get; set; }
+
+        public VendorType VendorType { get; set; }
         [Required]
         public string? AddressLine1 { get; set; }
         public string? AddressLine2 { get; set; }

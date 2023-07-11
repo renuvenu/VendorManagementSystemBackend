@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Repository.Migrations
 {
     /// <inheritdoc />
-    public partial class basesetup : Migration
+    public partial class VendorDetails : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -41,6 +41,30 @@ namespace Repository.Migrations
                 {
                     table.PrimaryKey("PK_PurchaseOrders", x => x.Id);
                 });
+
+            migrationBuilder.CreateTable(
+                name: "VendorDetails",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    VendorName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    VendorType = table.Column<int>(type: "int", nullable: false),
+                    AddressLine1 = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AddressLine2 = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    City = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    State = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PostalCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Country = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TelePhone1 = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TelePhone2 = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    VendorEmail = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    VendorWebsite = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_VendorDetails", x => x.Id);
+                });
         }
 
         /// <inheritdoc />
@@ -48,6 +72,9 @@ namespace Repository.Migrations
         {
             migrationBuilder.DropTable(
                 name: "PurchaseOrders");
+
+            migrationBuilder.DropTable(
+                name: "VendorDetails");
         }
     }
 }
