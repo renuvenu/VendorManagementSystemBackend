@@ -29,7 +29,7 @@ namespace Model.Requests
         public string? BillingAddressCountry { get; set; }
 
         [Required]
-        [MaxLength(6)]
+        [MaxLength(255)]
         public string? BillingAddressZipcode { get; set; }
 
         [Required]
@@ -37,6 +37,7 @@ namespace Model.Requests
         public string? ShippingAddress { get; set; }
 
         [Required]
+        [MaxLength(255)]
         public string? ShippingAddressCity { get; set; }
 
         [Required]
@@ -48,7 +49,7 @@ namespace Model.Requests
         public string? ShippingAddressCountry { get; set; }
 
         [Required]
-        [MaxLength(6)]
+        [MaxLength(255)]
         public string? ShippingAddressZipcode { get; set; }
 
         [Required]
