@@ -8,9 +8,8 @@ namespace Model
         public Guid Id { get; set; }
 
         [Required]
-        public Guid UserId { get; set; }
+        public Guid? UserId { get; set; }
 
-        [Required]
         public string? TrackingNumber { get; set; }
 
         [Required]
@@ -19,10 +18,8 @@ namespace Model
         [Required]
         public string? DueDate { get; set; } = DateTime.Now.ToString();
 
-        [Required]
-        public Guid ApprovedBy { get; set; }
+        public Guid? ApprovedBy { get; set; }
 
-        [Required]
         public string? ApprovedDateTime { get; set; }
 
         [Required]
@@ -62,7 +59,7 @@ namespace Model
         public string? ShippingAddressCountry { get; set; }
 
         [Required]
-        [MaxLength(6)]
+        [MaxLength(255)]
         public string? ShippingAddressZipcode { get; set; }
 
         [Required]
