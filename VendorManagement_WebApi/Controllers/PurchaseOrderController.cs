@@ -18,11 +18,12 @@ namespace VendorManagement_WebApi.Controllers
             this.dbContextAccess = dbContextAccess;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> addPurchaseOrder(PurchaseOrderRequest purchaseOrderRequest)
-        {
-            PurchaseOrder purchaseOrder = new PurchaseOrder();
-
-        }
+        //[HttpPost]
+        //public async Task<IActionResult> addPurchaseOrder(PurchaseOrderRequest purchaseOrderRequest)
+        //{
+        //    PurchaseOrder purchaseOrder = new PurchaseOrder();
+        //    purchaseOrder.UserId = purchaseOrderRequest.UserId;
+        //    purchaseOrder.
+        //}
     }
 }
