@@ -9,5 +9,7 @@ namespace Repository
 
         public DbSet<PurchaseOrder> PurchaseOrders { get; set; }
 
+        public DbSet<ProductDetail> ProductDetails { get; set; }
+
     }
 }
