@@ -25,7 +25,7 @@ namespace VendorManagement_WebApi.Controllers
             }
 
             [HttpPost]
-            public async Task<IActionResult> InsertProductDetail(InsertProductDetailRequest insertProductDetailRequest)
+            public async void InsertProductDetail(InsertProductDetailRequest insertProductDetailRequest)
             {
 
                 if (insertProductDetailRequest != null)
@@ -42,11 +42,7 @@ namespace VendorManagement_WebApi.Controllers
                     await productdetailDBContext1.productDetails.AddAsync(productdetail);
                     await productdetailDBContext1.SaveChangesAsync();
 
-                    return Ok(productdetail);
-                }
-                else
-                {
-                    return BadRequest("Product Detail is not available");
+                    //return Ok(productdetail);
                 }
             }
 
