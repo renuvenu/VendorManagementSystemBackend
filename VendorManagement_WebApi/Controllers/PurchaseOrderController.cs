@@ -10,8 +10,10 @@ namespace VendorManagement_WebApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+
     public class PurchaseOrderController : Controller
     {
+
         private readonly DbContextAccess dbContextAccess;
 
         public PurchaseOrderController(DbContextAccess dbContextAccess)
@@ -42,7 +44,7 @@ namespace VendorManagement_WebApi.Controllers
             await dbContextAccess.PurchaseOrders.AddAsync(purchaseOrder);
             await dbContextAccess.SaveChangesAsync();
             ProductPurchaseOrderController productPurchaseOrderController = new ProductPurchaseOrderController(dbContextAccess);
-            purchaseOrderRequest.ProductsPurchased.ForEach(data =>
+            purchaseOrderRequest?.ProductsPurchased?.ForEach(async data =>
             {
                 data.PurchaseOrderId = purchaseOrder.Id;
                 productPurchaseOrderController.InsertProductPurchaseOrder(data);
