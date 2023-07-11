@@ -13,5 +13,7 @@ namespace Repository
 
         public DbSet<ProductDetail> productDetails { get; set; }
 
+        public DbSet<ProductPurchaseOrder> productpurchaseorder { get; set; }
+
     }
 }
