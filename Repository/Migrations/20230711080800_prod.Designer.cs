@@ -12,8 +12,8 @@ using Repository;
 namespace Repository.Migrations
 {
     [DbContext(typeof(DbContextAccess))]
-    [Migration("20230711073422_productdetails")]
-    partial class productdetails
+    [Migration("20230711080800_prod")]
+    partial class prod
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -187,6 +187,9 @@ namespace Repository.Migrations
                     b.Property<string>("VendorName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("VendorType")
+                        .HasColumnType("int");
 
                     b.Property<string>("VendorWebsite")
                         .HasColumnType("nvarchar(max)");
