@@ -5,6 +5,7 @@ using Repository;
 using Microsoft.Identity.Client.Utils;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace VendorManagement_WebApi.Controllers
 {
@@ -53,7 +54,24 @@ namespace VendorManagement_WebApi.Controllers
         [HttpGet]
         public async Task<IActionResult> getProductOrderDetails()
         {
-            return Ok(await dbContextAccess.PurchaseOrders.ToListAsync());
+            List<PurchaseOrder> purchaseOrders = new List<PurchaseOrder>(await dbContextAccess.PurchaseOrders.ToListAsync());
+            var res = from purchaseOrder in purchaseOrders
+                      join ppo in dbContextAccess.productpurchaseorder on purchaseOrder.Id equals ppo.PurchaseOrderId
+                      join product in dbContextAccess.productDetails on ppo.ProductId equals product.Id
+                      select new { 
+                          purchaseOrder,
+                          ppo,
+                          product
+                      };
+            return Ok(res);
+            //purchaseOrders.ForEach(async purchaseOrder =>
+            //{
+            //    //List<ProductPurchaseOrder> productPurchaseOrders = new List<ProductPurchaseOrder>(await dbContextAccess.productpurchaseorder.Where(data => data.PurchaseOrderId == purchaseOrder.Id).ToListAsync());
+            //    //productPurchaseOrders.ForEach(orders => )
+            //    //List<ProductPurchaseOrder> productPurchaseOrder = dbContextAccess.productpurchaseorder.AllAsync(data => data.PurchaseOrderId == purchaseOrder.Id);
+            //    var result = from productPurchaseOrder in productPurchaseOrders join ppo in dbContextAccess.productpurchaseorder on productPurchaseOrder.ProductId equals ppo.ProductId
+            //});
+            //return Ok(await dbContextAccess.PurchaseOrders.ToListAsync());
         }
     }
 }
