@@ -33,6 +33,7 @@ namespace VendorManagement_WebApi.Controllers
                 ProductPurchaseOrder productpurchasedetail = new ProductPurchaseOrder();
 
                 productpurchasedetail.Id = new Guid();
+                productpurchasedetail.VendorId= insertProductPurchaseRequest.VendorId;
                 productpurchasedetail.PurchaseOrderId = insertProductPurchaseRequest.PurchaseOrderId;
                 productpurchasedetail.ProductId = insertProductPurchaseRequest.ProductId;
                 productpurchasedetail.Quantity = insertProductPurchaseRequest.Quantity;

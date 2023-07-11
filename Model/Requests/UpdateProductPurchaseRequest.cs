@@ -8,6 +8,8 @@ namespace Model.Requests
 {
     public class UpdateProductPurchaseRequest
     {
+        public Guid VendorId { get; set; }
+
         public Guid PurchaseOrderId { get; set; }
 
         public Guid ProductId { get; set; }
