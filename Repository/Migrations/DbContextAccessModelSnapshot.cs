@@ -158,6 +158,9 @@ namespace Repository.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("VendorType")
+                        .HasColumnType("int");
+
                     b.Property<string>("VendorWebsite")
                         .HasColumnType("nvarchar(max)");
 

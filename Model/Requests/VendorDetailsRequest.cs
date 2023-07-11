@@ -15,6 +15,8 @@ namespace Model.Requests
         [Required]
         public bool IsActive { get; set; }
         [Required]
+        public VendorType VendorType { get; set; }
+        [Required]
         [MaxLength(255)]
         public string? AddressLine1 { get; set; }
         [MaxLength(255)]
