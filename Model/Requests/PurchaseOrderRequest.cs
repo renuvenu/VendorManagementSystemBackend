@@ -60,5 +60,9 @@ namespace Model.Requests
         public string? Description { get; set; }
 
 
+        [Required]
+        public List<InsertProductPurchaseRequest>? ProductsPurchased { get; set; }
+
+
     }
 }
