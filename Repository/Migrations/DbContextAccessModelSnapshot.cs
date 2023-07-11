@@ -46,7 +46,7 @@ namespace Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProductDetails");
+                    b.ToTable("productDetails");
                 });
 
             modelBuilder.Entity("Model.PurchaseOrder", b =>

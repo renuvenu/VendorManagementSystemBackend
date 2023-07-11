@@ -12,8 +12,8 @@ using Repository;
 namespace Repository.Migrations
 {
     [DbContext(typeof(DbContextAccess))]
-    [Migration("20230711080800_prod")]
-    partial class prod
+    [Migration("20230711085842_added_controllers")]
+    partial class added_controllers
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -49,7 +49,7 @@ namespace Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProductDetails");
+                    b.ToTable("productDetails");
                 });
 
             modelBuilder.Entity("Model.PurchaseOrder", b =>

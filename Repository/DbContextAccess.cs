@@ -11,7 +11,7 @@ namespace Repository
         public DbSet<VendorDetails> VendorDetails { get; set; }
 
 
-        public DbSet<ProductDetail> ProductDetails { get; set; }
+        public DbSet<ProductDetail> productDetails { get; set; }
 
     }
 }
