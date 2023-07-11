@@ -34,7 +34,7 @@ namespace VendorManagement_WebApi.Controllers
                     ProductDetail productdetail = new ProductDetail();
 
                     productdetail.Id = new Guid();
-                    //productdetail.VendorDetails.Id = new Guid();
+                    productdetail.VendorId = insertProductDetailRequest.VendorId;
                     productdetail.ProductName = insertProductDetailRequest.ProductName;
                     productdetail.Price = insertProductDetailRequest.Price;
                     productdetail.ProductDescription = insertProductDetailRequest.ProductDescription;

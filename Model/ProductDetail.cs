@@ -14,7 +14,7 @@ namespace Model
         public Guid Id { get; set; }
 
         [Required]
-        public VendorDetails VendorDetails { get; set; }
+        public Guid VendorId  { get; set; }
 
         [Required]
         [MaxLength(255)]
