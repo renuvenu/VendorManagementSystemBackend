@@ -8,6 +8,8 @@ namespace Repository
         public DbContextAccess(DbContextOptions dbContextOptions) : base(dbContextOptions) { }
 
         public DbSet<PurchaseOrder> PurchaseOrders { get; set; }
+        public DbSet<VendorDetails> VendorDetails { get; set; }
+
 
     }
 }
