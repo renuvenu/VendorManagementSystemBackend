@@ -25,7 +25,7 @@ namespace VendorManagement_WebApi.Controllers
             }
 
             [HttpPost]
-            public async void InsertProductDetail(InsertProductDetailRequest insertProductDetailRequest)
+            public async Task<IActionResult> InsertProductDetail(InsertProductDetailRequest insertProductDetailRequest)
             {
 
                 if (insertProductDetailRequest != null)
@@ -42,20 +42,24 @@ namespace VendorManagement_WebApi.Controllers
                     await productdetailDBContext1.productDetails.AddAsync(productdetail);
                     await productdetailDBContext1.SaveChangesAsync();
 
-                    //return Ok(productdetail);
+                  return Ok(productdetail);
                 }
+            else
+            {
+                return BadRequest();
+            }
             }
 
             [HttpPut]
 
-            [Route("{Id:guid}")]
-            public async Task<IActionResult> UpdatePersonDetail([FromRoute] Guid Id, UpdateProductDetailRequest updateProductDetailRequest)
+  
+            public async Task<IActionResult> UpdateProductDetail(Guid Id, InsertProductDetailRequest updateProductDetailRequest)
             {
 
 
                 if (updateProductDetailRequest != null)
                 {
-                    var productdetailResult = await productdetailDBContext1.productDetails.FirstOrDefaultAsync(x => x.Id.Equals(Id));
+                    var productdetailResult = await productdetailDBContext1.productDetails.FirstOrDefaultAsync(x => x.VendorId.Equals(Id));
 
                     if (productdetailResult != null)
                     {
