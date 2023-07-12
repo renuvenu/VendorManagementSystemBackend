@@ -58,7 +58,7 @@ namespace VendorManagement_WebApi.Controllers
             VendorDetailsServices vendorDetailsServices=new VendorDetailsServices();
          //   res= await vendorDetailsServices.InsertVendorDetails(vendorDetailsRequest);
 
-            return Ok(vendorDetailsServices.InsertVendorDetails(vendorDetailsRequest);
+            return Ok(vendorDetailsServices.InsertVendorDetails(vendorDetailsRequest));
 
         }
 
