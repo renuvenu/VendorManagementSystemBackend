@@ -4,23 +4,19 @@ using Model.Requests;
 using Repository;
 
 
-
-
 namespace Services
 {
     public class VendorDetailsServices
     {
         private readonly DbContextAccess dbContextAccess;
 
-        public VendorDetailsServices()
-        {
-        }
 
         public VendorDetailsServices(DbContextAccess dbContextAccess)
         {
             this.dbContextAccess = dbContextAccess;
         }
 
+        
         public async Task<IActionResult> InsertVendorDetails(VendorDetailsRequest vendorDetailsRequest)
         {
             ProductDetail productDetail = new ProductDetail();
@@ -45,21 +41,23 @@ namespace Services
             await dbContextAccess.SaveChangesAsync();
 
 
-            ////ProductDetailsController productDetailsController = new ProductDetailsController(dbContextAccess);
-            //vendorDetailsRequest.ProductDetailsRequest.ForEach(data =>
-            //{
-            //    data.VendorId = vendorDetails.Id;
-            //    productDetailsController.InsertProductDetail(data);
-            //});
+            ProductDetailsController productDetailsController = new ProductDetailsController(dbContextAccess);
+            vendorDetailsRequest.ProductDetailsRequest.ForEach(data =>
+            {
+                data.VendorId = vendorDetails.Id;
+                productDetailsController.InsertProductDetail(data);
+            });
+            //  VendorDetailsServices vendorDetailsServices=new VendorDetailsServices();
+            //   res= await vendorDetailsServices.InsertVendorDetails(vendorDetailsRequest);
+
             return Ok(vendorDetails);
 
         }
 
-        private IActionResult Ok(VendorDetails vendorDetails)
-        {
-            throw new NotImplementedException();
-        }
+
+
+
     }
 
-    
+
 }
