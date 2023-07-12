@@ -13,8 +13,12 @@ namespace Model
         [Required]
         public Guid Id { get; set; }
 
+        [Display(Name = "VendorDetails")]
+        public Guid VendorId { get; set; }
+
         [Required]
-        public Guid VendorId  { get; set; }
+        [ForeignKey("VendorId")]
+        public virtual VendorDetails? VendorDetails { get; set; }
 
         [Required]
         [MaxLength(255)]
@@ -26,5 +30,9 @@ namespace Model
         [Required]
         [Column(TypeName = "decimal(28, 2)")]
         public decimal? Price { get; set; }
+
+        [Required]
+        public bool IsActive { get; set; }
+
     }
 }

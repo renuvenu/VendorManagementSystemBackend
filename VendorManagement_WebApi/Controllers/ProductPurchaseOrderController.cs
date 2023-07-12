@@ -25,7 +25,7 @@ namespace VendorManagement_WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> InsertProductPurchaseOrder(InsertProductPurchaseRequest insertProductPurchaseRequest)
+        public void InsertProductPurchaseOrder(InsertProductPurchaseRequest insertProductPurchaseRequest)
         {
 
             if (insertProductPurchaseRequest != null)
@@ -38,14 +38,8 @@ namespace VendorManagement_WebApi.Controllers
                 productpurchasedetail.ProductId = insertProductPurchaseRequest.ProductId;
                 productpurchasedetail.Quantity = insertProductPurchaseRequest.Quantity;
 
-                await productpurchasedetailDBContext1.productpurchaseorder.AddAsync(productpurchasedetail);
-                await productpurchasedetailDBContext1.SaveChangesAsync();
-
-                return Ok(productpurchasedetail);
-            }
-            else
-            {
-                return BadRequest("Product Detail is not available");
+                productpurchasedetailDBContext1.productpurchaseorder.Add(productpurchasedetail);
+                productpurchasedetailDBContext1.SaveChanges();
             }
         }
         [HttpGet]

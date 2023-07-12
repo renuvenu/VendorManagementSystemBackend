@@ -28,6 +28,9 @@ namespace Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<decimal?>("Price")
                         .IsRequired()
                         .HasColumnType("decimal(28, 2)");
@@ -46,6 +49,8 @@ namespace Repository.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("VendorId");
+
                     b.ToTable("productDetails");
                 });
 
@@ -55,16 +60,28 @@ namespace Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ProductId")
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("ProductId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("PurchaseOrderId")
+                    b.Property<Guid?>("PurchaseOrderId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<long>("Quantity")
                         .HasColumnType("bigint");
 
+                    b.Property<Guid?>("VendorId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("PurchaseOrderId");
+
+                    b.HasIndex("VendorId");
 
                     b.ToTable("productpurchaseorder");
                 });
@@ -114,6 +131,9 @@ namespace Repository.Migrations
                     b.Property<string>("DueDate")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("OrderDateTime")
                         .IsRequired()
@@ -225,6 +245,38 @@ namespace Repository.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("VendorDetails");
+                });
+
+            modelBuilder.Entity("Model.ProductDetail", b =>
+                {
+                    b.HasOne("Model.VendorDetails", "VendorDetails")
+                        .WithMany()
+                        .HasForeignKey("VendorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("VendorDetails");
+                });
+
+            modelBuilder.Entity("Model.ProductPurchaseOrder", b =>
+                {
+                    b.HasOne("Model.ProductDetail", "ProductDetail")
+                        .WithMany()
+                        .HasForeignKey("ProductId");
+
+                    b.HasOne("Model.PurchaseOrder", "PurchaseOrder")
+                        .WithMany()
+                        .HasForeignKey("PurchaseOrderId");
+
+                    b.HasOne("Model.VendorDetails", "VendorDetails")
+                        .WithMany()
+                        .HasForeignKey("VendorId");
+
+                    b.Navigation("ProductDetail");
+
+                    b.Navigation("PurchaseOrder");
+
+                    b.Navigation("VendorDetails");
                 });
 #pragma warning restore 612, 618
         }

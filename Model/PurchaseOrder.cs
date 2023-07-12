@@ -8,6 +8,7 @@ namespace Model
         public Guid Id { get; set; }
 
         [Required]
+        [ForeignKey("UserId")] //need to add relation to table
         public Guid? UserId { get; set; }
 
         public string? TrackingNumber { get; set; }
@@ -18,7 +19,8 @@ namespace Model
         [Required]
         public string? DueDate { get; set; } = DateTime.Now.ToString();
 
-        public Guid? ApprovedBy { get; set; }
+        [ForeignKey("ApprovedBy")]//need to add relation to table
+        public virtual Guid? ApprovedBy { get; set; }
 
         public string? ApprovedDateTime { get; set; }
 
@@ -76,6 +78,10 @@ namespace Model
         [Required]
         [Column(TypeName = "decimal(18,2)")]
         public decimal? Total { get; set; }
+
+
+        [Required]
+        public bool IsActive { get; set; }
 
     }
 }

@@ -22,7 +22,7 @@ namespace Model
         public string? VendorName { get; set; }
         [Required]
         public bool IsActive { get; set; }
-
+        [Required]
         public VendorType VendorType { get; set; }
         [Required]
         public string? AddressLine1 { get; set; }
@@ -42,5 +42,6 @@ namespace Model
         public string? VendorEmail { get; set; }
 
         public string? VendorWebsite { get; set; }
+
     }
 }
