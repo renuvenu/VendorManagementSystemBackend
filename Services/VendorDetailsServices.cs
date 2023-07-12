@@ -2,7 +2,8 @@
 using Model;
 using Model.Requests;
 using Repository;
-using VendorManagement_WebApi.Controllers;
+
+
 
 
 namespace Services
@@ -44,12 +45,12 @@ namespace Services
             await dbContextAccess.SaveChangesAsync();
 
 
-            ProductDetailsController productDetailsController = new ProductDetailsController(dbContextAccess);
-            vendorDetailsRequest.ProductDetailsRequest.ForEach(data =>
-            {
-                data.VendorId = vendorDetails.Id;
-                productDetailsController.InsertProductDetail(data);
-            });
+            ////ProductDetailsController productDetailsController = new ProductDetailsController(dbContextAccess);
+            //vendorDetailsRequest.ProductDetailsRequest.ForEach(data =>
+            //{
+            //    data.VendorId = vendorDetails.Id;
+            //    productDetailsController.InsertProductDetail(data);
+            //});
             return Ok(vendorDetails);
 
         }
