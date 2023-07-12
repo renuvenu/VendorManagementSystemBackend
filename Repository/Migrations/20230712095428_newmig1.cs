@@ -6,40 +6,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Repository.Migrations
 {
     /// <inheritdoc />
-    public partial class newmigration : Migration
+    public partial class newmig1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "productDetails",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    VendorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ProductName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    ProductDescription = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Price = table.Column<decimal>(type: "decimal(28,2)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_productDetails", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "productpurchaseorder",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    PurchaseOrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Quantity = table.Column<long>(type: "bigint", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_productpurchaseorder", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "PurchaseOrders",
                 columns: table => new
@@ -64,7 +35,8 @@ namespace Repository.Migrations
                     TermsAndConditions = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Total = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    Total = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -94,19 +66,92 @@ namespace Repository.Migrations
                 {
                     table.PrimaryKey("PK_VendorDetails", x => x.Id);
                 });
+
+            migrationBuilder.CreateTable(
+                name: "productDetails",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    VendorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    ProductDescription = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Price = table.Column<decimal>(type: "decimal(28,2)", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_productDetails", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_productDetails_VendorDetails_VendorId",
+                        column: x => x.VendorId,
+                        principalTable: "VendorDetails",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "productpurchaseorder",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PurchaseOrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    VendorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Quantity = table.Column<long>(type: "bigint", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_productpurchaseorder", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_productpurchaseorder_PurchaseOrders_PurchaseOrderId",
+                        column: x => x.PurchaseOrderId,
+                        principalTable: "PurchaseOrders",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_productpurchaseorder_VendorDetails_VendorId",
+                        column: x => x.VendorId,
+                        principalTable: "VendorDetails",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_productpurchaseorder_productDetails_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "productDetails",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_productDetails_VendorId",
+                table: "productDetails",
+                column: "VendorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_productpurchaseorder_ProductId",
+                table: "productpurchaseorder",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_productpurchaseorder_PurchaseOrderId",
+                table: "productpurchaseorder",
+                column: "PurchaseOrderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_productpurchaseorder_VendorId",
+                table: "productpurchaseorder",
+                column: "VendorId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "productDetails");
-
-            migrationBuilder.DropTable(
                 name: "productpurchaseorder");
 
             migrationBuilder.DropTable(
                 name: "PurchaseOrders");
+
+            migrationBuilder.DropTable(
+                name: "productDetails");
 
             migrationBuilder.DropTable(
                 name: "VendorDetails");
