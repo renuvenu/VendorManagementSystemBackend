@@ -15,6 +15,9 @@ namespace Model
         public Guid PurchaseOrderId { get; set; }
 
         [Required]
+        public Guid VendorId { get; set; }
+
+        [Required]
         public Guid ProductId { get; set; }
 
         [Required]

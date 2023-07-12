@@ -2,6 +2,7 @@
 using Model.Requests;
 using Model;
 using Repository;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace VendorManagement_WebApi.Controllers
@@ -26,6 +27,7 @@ namespace VendorManagement_WebApi.Controllers
         [HttpPost]
         public async Task<IActionResult> InsertVendorDetails(VendorDetailsRequest vendorDetailsRequest)
         {
+            ProductDetail productDetail=new ProductDetail();
             VendorDetails vendorDetails = new VendorDetails();
             vendorDetails.Id = new Guid();
             vendorDetails.VendorName = vendorDetailsRequest.VendorName;
@@ -45,6 +47,14 @@ namespace VendorManagement_WebApi.Controllers
 
             await dbContextAccess.VendorDetails.AddAsync(vendorDetails);
             await dbContextAccess.SaveChangesAsync();
+           
+
+            ProductDetailsController productDetailsController = new ProductDetailsController(dbContextAccess);
+            vendorDetailsRequest.ProductDetailsRequest.ForEach(data =>
+            {
+                data.VendorId = vendorDetails.Id;
+                productDetailsController.InsertProductDetail(data);
+            });
             return Ok(vendorDetails);
 
         }
@@ -78,6 +88,12 @@ namespace VendorManagement_WebApi.Controllers
 
                     dbContextAccess.VendorDetails.Update(vendorDetails);
                     await dbContextAccess.SaveChangesAsync();
+                    ProductDetailsController productDetailsController = new ProductDetailsController(dbContextAccess);
+                    updatevendorDetails.ProductDetailsRequest.ForEach(data =>
+                    {
+                   
+                        productDetailsController.UpdateProductDetail(id,data);
+                    });
                 }
 
                 return Ok(vendorDetails);
@@ -87,6 +103,44 @@ namespace VendorManagement_WebApi.Controllers
                 return BadRequest("Not available");
             }
         }
+
+        [HttpGet]
+        [Route("Vendor/Product")]
+        public async Task<IActionResult> GetVendorDetailsWithProductDetails()
+        {
+            
+            var vendorDetailsWithProductDetails = await dbContextAccess.VendorDetails
+                .Select(vendor => new VendorDetailswithProductDetailsRequest
+                {
+                    VendorDetails = vendor,
+                    ProductDetails= dbContextAccess.productDetails.Where(p => p.VendorId == vendor.Id).ToList()
+                })
+                .ToListAsync();
+
+            return Ok(vendorDetailsWithProductDetails);
+        }
+
+        [HttpGet]
+        [Route("Vendor/Product/{vendorId}")]
+        public async Task<IActionResult> GetVendorWithProductDetails(Guid vendorId)
+        {
+            var vendorWithProductDetails = await dbContextAccess.VendorDetails
+                .Where(v => v.Id == vendorId)
+                .Select(vendor => new VendorDetailswithProductDetailsRequest
+                {
+                    VendorDetails = vendor,
+                    ProductDetails = dbContextAccess.productDetails.Where(p => p.VendorId == vendor.Id).ToList()
+                })
+                .SingleOrDefaultAsync();
+
+            if (vendorWithProductDetails == null)
+            {
+                return NotFound(); 
+            }
+
+            return Ok(vendorWithProductDetails);
+        }
+
 
         [HttpDelete]
         [Route("{id:guid}")]

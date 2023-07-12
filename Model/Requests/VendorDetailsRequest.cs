@@ -43,5 +43,13 @@ namespace Model.Requests
         public string? VendorEmail { get; set; }
 
         public string? VendorWebsite { get; set; }
+
+
+        [Required]
+        public List<InsertProductDetailRequest>? ProductDetailsRequest { get; set; }
+
+
+
+
     }
 }
