@@ -25,7 +25,9 @@ namespace Model
         public string? ProductName { get; set; }
 
         [MaxLength(255)]
-        public string? ProductDescription { get; set; }
+        public string? ProductDescription { get; set; } 
+
+        
 
         [Required]
         [Column(TypeName = "decimal(28, 2)")]
