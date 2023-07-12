@@ -19,30 +19,30 @@ namespace Services
 
         
 
-        public async Task<IActionResult> InsertProductDetail(InsertProductDetailRequest insertProductDetailRequest)
-        {
+        //public async Task<IActionResult> InsertProductDetail(InsertProductDetailRequest insertProductDetailRequest)
+        //{
 
-            if (insertProductDetailRequest != null)
-            {
-                ProductDetail productdetail = new ProductDetail();
+        //    if (insertProductDetailRequest != null)
+        //    {
+        //        ProductDetail productdetail = new ProductDetail();
 
-                productdetail.Id = new Guid();
-                productdetail.VendorId = insertProductDetailRequest.VendorId;
-                productdetail.ProductName = insertProductDetailRequest.ProductName;
-                productdetail.Price = insertProductDetailRequest.Price;
-                productdetail.ProductDescription = insertProductDetailRequest.ProductDescription;
+        //        productdetail.Id = new Guid();
+        //        productdetail.VendorId = insertProductDetailRequest.VendorId;
+        //        productdetail.ProductName = insertProductDetailRequest.ProductName;
+        //        productdetail.Price = insertProductDetailRequest.Price;
+        //        productdetail.ProductDescription = insertProductDetailRequest.ProductDescription;
 
 
-                await productdetailDBContext1.productDetails.AddAsync(productdetail);
-                await productdetailDBContext1.SaveChangesAsync();
+        //        await productdetailDBContext1.productDetails.AddAsync(productdetail);
+        //        await productdetailDBContext1.SaveChangesAsync();
 
-                return Ok(productdetail);
-            }
-            else
-            {
-                return BadRequest();
-            }
-        }
+        //        return Ok(productdetail);
+        //    }
+        //    else
+        //    {
+        //        return BadRequest();
+        //    }
+        //}
 
     }
 }
