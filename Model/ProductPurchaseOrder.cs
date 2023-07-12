@@ -12,6 +12,7 @@ namespace Model
         [Required]
         public Guid Id { get; set; }
         [Required]
+       
         public Guid PurchaseOrderId { get; set; }
 
         [Required]

@@ -6,6 +6,7 @@ using Microsoft.Identity.Client.Utils;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using Services;
 
 namespace VendorManagement_WebApi.Controllers
 {
@@ -55,14 +56,16 @@ namespace VendorManagement_WebApi.Controllers
         public async Task<IActionResult> getProductOrderDetails()
         {
             List<PurchaseOrder> purchaseOrders = new List<PurchaseOrder>(await dbContextAccess.PurchaseOrders.ToListAsync());
-            var res = from purchaseOrder in purchaseOrders
-                      join ppo in dbContextAccess.productpurchaseorder on purchaseOrder.Id equals ppo.PurchaseOrderId
-                      join product in dbContextAccess.productDetails on ppo.ProductId equals product.Id
-                      select new { 
-                          purchaseOrder,
-                          ppo,
-                          product
+            var res = from purchaseorder in purchaseOrders
+                      join ppo in dbContextAccess.productpurchaseorder on purchaseorder.Id equals ppo.PurchaseOrderId into productpurchasedetails
+                      //from vendor in dbcontextaccess.vendordetails where vendor.id == matchedproduct.elementat(0).vendorid
+                      select new
+                      {
+                          purchaseorder,
+                          productpurchasedetails
                       };
+
+            var res2 = res.ToList();
             return Ok(res);
             //purchaseOrders.ForEach(async purchaseOrder =>
             //{
