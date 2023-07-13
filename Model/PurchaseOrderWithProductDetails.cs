@@ -16,7 +16,7 @@ namespace Model
 
         public List<PurchaseProductDetails> PurchaseProducts { get; set;}
 
-        public VendorDetails VendorDetails { get; set; }
+        public VendorForPurchaseOrder VendorForPurchaseOrder { get; set; }
         //public List<ProductPurchaseOrder> ProductDetails { get; set; }
         //public List<ProductDetail> Details { get; set; }    
     }
