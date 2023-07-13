@@ -33,14 +33,9 @@ namespace Services
 
         public void UpdateProductDetail(Guid vendorId,UpdateProductDetailRequest updateProductDetailRequest)
         {
-            //ProductDetail productdetail = new ProductDetail();
-            //productdetail.Id = updateProductDetailRequest.Id;
-            //productdetail.ProductName= updateProductDetailRequest.ProductName;
-            //productdetail.ProductDescription= updateProductDetailRequest.ProductDescription;
-            //productdetail.Price= updateProductDetailRequest.Price;
-            //productdetail.VendorId = vendorId;
+            
             var product = dbContextAccess.productDetails.Where(x => x.Id == updateProductDetailRequest.Id).FirstOrDefault();
-            //dbContextAccess.productDetails.Update(productdetail);
+           
             dbContextAccess.SaveChanges();
         }
 
@@ -53,10 +48,5 @@ namespace Services
                 dbContextAccess.SaveChanges();
             }
         }
-
-        //            return Ok(productdetail);
-        //        }
-        //    }
-        //}
     }
 }
