@@ -21,7 +21,7 @@ namespace VendorManagement_WebApi.Controllers
         [HttpPost]
         public async Task<IActionResult> InsertVendorDetails(VendorDetailsRequest vendorDetailsRequest)
         {
-            if(vendorDetailsRequest != null) {
+            if(vendorDetailsRequest != null && vendorDetailsRequest.ProductDetailsRequest.Count>0) {
                 return Ok(vendorDetailsServices.InsertVendorDetails(vendorDetailsRequest));
             }
             else
@@ -59,9 +59,16 @@ namespace VendorManagement_WebApi.Controllers
 
         [HttpPut]
         [Route("{id:guid}")]
-        public async Task<IActionResult> UpdateVendor([FromRoute] Guid id,VendorDetailsUpdateRequest vendorDetailsUpdateRequest)
+        public async Task<IActionResult> UpdateVendor([FromRoute] Guid id, VendorDetailsUpdateRequest vendorDetailsUpdateRequest)
         {
-            return Ok(vendorDetailsServices.UpdateVendor(id, vendorDetailsUpdateRequest));
+            if (vendorDetailsUpdateRequest != null && vendorDetailsUpdateRequest.ProductDetailsRequest.Count>0)
+            {
+                return Ok(vendorDetailsServices.UpdateVendor(id, vendorDetailsUpdateRequest));
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
     }
 }

@@ -6,7 +6,16 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Services
 {
-    public class ProductDetailsService
+    public interface InterfaceProductDetailService
+    {
+        void InsertProductDetail(InsertProductDetailRequest insertProductDetailRequest);
+        void UpdateProductDetail(Guid vendorId, UpdateProductDetailRequest updateProductDetailRequest);
+
+        void DeleteProductDetail(Guid id);
+
+
+    }
+    public class ProductDetailsService : InterfaceProductDetailService
     {
 
         private readonly DbContextAccess dbContextAccess;
