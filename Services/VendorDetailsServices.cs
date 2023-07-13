@@ -19,16 +19,20 @@ namespace Services
     {
         private readonly DbContextAccess dbContextAccess;
         public ProductDetailsService productDetailsService;
+      
+
         public VendorDetailsServices()
         {
-
+            // Initialize dependencies or perform other setup if needed
         }
+
         public VendorDetailsServices(DbContextAccess dbContextAccess)
         {
             this.dbContextAccess = dbContextAccess;
             productDetailsService = new ProductDetailsService(dbContextAccess);
-            throw new NotImplementedException();
         }
+
+      
 
         public VendorDetails InsertVendorDetails(VendorDetailsRequest vendorDetailsRequest)
         {
