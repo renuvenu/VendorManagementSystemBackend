@@ -27,7 +27,7 @@ namespace VendorManagement_WebApi.Controllers
         [HttpPost]
         public async Task<IActionResult> InsertVendorDetails(VendorDetailsRequest vendorDetailsRequest)
         {
-            ProductDetail productDetail=new ProductDetail();
+           // ProductDetail productDetail=new ProductDetail();
             VendorDetails vendorDetails = new VendorDetails();
             vendorDetails.Id = new Guid();
             vendorDetails.VendorName = vendorDetailsRequest.VendorName;

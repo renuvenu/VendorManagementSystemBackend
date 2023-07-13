@@ -16,7 +16,7 @@ namespace Services
             this.dbContextAccess = dbContextAccess;
         }
 
-        
+
         //public async Task<IActionResult> InsertVendorDetails(VendorDetailsRequest vendorDetailsRequest)
         //{
         //    ProductDetail productDetail = new ProductDetail();
@@ -41,12 +41,12 @@ namespace Services
         //    await dbContextAccess.SaveChangesAsync();
 
 
-        //    ProductDetailsController productDetailsController = new ProductDetailsController(dbContextAccess);
-        //    vendorDetailsRequest.ProductDetailsRequest.ForEach(data =>
-        //    {
-        //        data.VendorId = vendorDetails.Id;
-        //        productDetailsController.InsertProductDetail(data);
-        //    });
+        //    //productdetailscontroller productdetailscontroller = new productdetailscontroller(dbcontextaccess);
+        //    //vendordetailsrequest.productdetailsrequest.foreach(data =>
+        //    //{
+        //    //    data.vendorid = vendordetails.id;
+        //    //    productdetailscontroller.insertproductdetail(data);
+        //    //});
         //    //  VendorDetailsServices vendorDetailsServices=new VendorDetailsServices();
         //    //   res= await vendorDetailsServices.InsertVendorDetails(vendorDetailsRequest);
 
