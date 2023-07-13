@@ -54,5 +54,9 @@ namespace Services
             }
         }
 
+        //            return Ok(productdetail);
+        //        }
+        //    }
+        //}
     }
 }
