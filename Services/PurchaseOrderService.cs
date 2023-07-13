@@ -50,12 +50,31 @@ namespace Services
             return purchaseOrder;
         }
 
-        //public  List<PurchaseOrderWithProductDetails> GetPurchaseOrder()
-        //{
-        //    return PurchaseOrderWithProductDetails();
-        //}
+       public List<PurchaseOrderWithProductDetails> GetPurchasedOrders()
+        {
+            List<PurchaseOrderWithProductDetails> purchaseOrderWithProductDetails = new List<PurchaseOrderWithProductDetails>();
+            purchaseOrderWithProductDetails = dbContextAccess.PurchaseOrders.Where(purchase => purchase.IsActive).ToList().Select(purchaseOrder => new PurchaseOrderWithProductDetails
+            {
+                PurchaseOrders = purchaseOrder,
+                PurchaseProducts = dbContextAccess.productpurchaseorder.Where(prod => prod.PurchaseOrderId == purchaseOrder.Id && prod.IsActive).ToList().Select(purchase => new PurchaseProductDetails
+                {
+                    Quantity = purchase.Quantity,
+                    Price = dbContextAccess.productDetails.Find(purchase.ProductId).Price,
+                    ProductDescription = dbContextAccess.productDetails.Find(purchase.ProductId).ProductDescription,
+                    ProductName = dbContextAccess.productDetails.Find(purchase.ProductId).ProductName,
+                    ProductId = purchase.Id
+                }).ToList(),
+                VendorForPurchaseOrder = dbContextAccess.productpurchaseorder.Where(e => e.PurchaseOrderId == purchaseOrder.Id).ToList().Select(purchase => new VendorForPurchaseOrder
+                {
+                    Id = purchase.Id,
+                    VendorName = dbContextAccess.VendorDetails.Find(purchase.VendorId).VendorName,
+                    VendorType = dbContextAccess.VendorDetails.Find(purchase.VendorId).VendorType
+                }).ToList().Last(),
+            }).ToList();
+            return purchaseOrderWithProductDetails;
+        }
 
-        public  decimal GetTotalAmount(Guid purchaseOrderId)
+        public decimal GetTotalAmount(Guid purchaseOrderId)
         {
             decimal totalAmount = 0;
             List<ProductPurchaseOrder> productPurchaseOrders = dbContextAccess.productpurchaseorder.Where(prod => prod.PurchaseOrderId == purchaseOrderId).ToList();
@@ -69,44 +88,11 @@ namespace Services
             });
             return totalAmount;
         }
-
-        //public List<PurchaseProductDetails> GetAllPurchaseProducts(Guid PurchaseOrderId)
-        //{
-        //    List<PurchaseProductDetails> purchaseProductDetailsList = new List<PurchaseProductDetails>();
-        //    var purchaseProducts = dbContextAccess.productpurchaseorder.Where(p => p.PurchaseOrderId == PurchaseOrderId).ToList();
-        //    purchaseProducts.ForEach(data =>
-        //    {
-        //        var product = dbContextAccess.productDetails.FirstOrDefault(product => product.Id == data.ProductId);
-        //        PurchaseProductDetails purchaseProductDetails = new PurchaseProductDetails();
-        //        purchaseProductDetails.ProductId = product.Id;
-        //        purchaseProductDetails.ProductName = product.ProductName;
-        //        purchaseProductDetails.ProductDescription = product.ProductDescription;
-        //        purchaseProductDetails.Price = product.Price;
-        //        purchaseProductDetails.Quantity = data.Quantity;
-        //        purchaseProductDetailsList.Add(purchaseProductDetails);
-        //    });
-        //    return purchaseProductDetailsList;
-
-        //}
-
-        //public List<PurchaseOrderWithProductDetails>  PurchaseOrderWithProductDetails()
-        //{
-        //    List<PurchaseOrderWithProductDetails> purchaseOrderWithProductDetails = new List<PurchaseOrderWithProductDetails>();
-        //    purchaseOrderWithProductDetails = dbContextAccess.PurchaseOrders.Select(purchase => new PurchaseOrderWithProductDetails
-        //    {
-        //        PurchaseOrders = purchase,
-        //        PurchaseProducts = GetAllPurchaseProducts(purchase.Id),
-        //        VendorDetails = GetVendorDetails(purchase.Id)
-        //    }).ToList();
-        //    return purchaseOrderWithProductDetails;
-        //}
-
-
-        //public VendorDetails GetVendorDetails(Guid PurchaseOrderId)
-        //{
-        //    var purchaseProduct = dbContextAccess.productpurchaseorder.FirstOrDefault(p => p.PurchaseOrderId == PurchaseOrderId);
-        //    return dbContextAccess.VendorDetails.FirstOrDefault(vendor => vendor.Id == purchaseProduct.VendorId);
-        //}
+        public VendorDetails GetVendorDetails(Guid PurchaseOrderId)
+        {
+            var purchaseProduct = dbContextAccess.productpurchaseorder.FirstOrDefault(p => p.PurchaseOrderId == PurchaseOrderId);
+            return dbContextAccess.VendorDetails.FirstOrDefault(vendor => vendor.Id == purchaseProduct.VendorId);
+        }
 
         public PurchaseOrder DeletePurchaseOrder(Guid PurchaseOrderId)
         {

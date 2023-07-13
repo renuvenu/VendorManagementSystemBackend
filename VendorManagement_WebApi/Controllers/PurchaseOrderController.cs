@@ -30,12 +30,12 @@ namespace VendorManagement_WebApi.Controllers
             } else { return BadRequest("Invalid Purchase Order requested"); }
         }
 
-        //[HttpGet]
-        //public async Task<IActionResult> GetPurchasedOrders()
-        //{
-        //    return Ok(purchaseOrderService.GetPurchaseOrder());
+        [HttpGet]
+        public async Task<IActionResult> GetPurchasedOrders()
+        {
+            return Ok(purchaseOrderService.GetPurchasedOrders());
 
-        //}
+        }
 
         [HttpDelete]
         [Route("{id:guid}")]
