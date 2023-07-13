@@ -17,8 +17,6 @@ namespace Services
     }
     public class VendorDetailsServices : InterfaceVendorDetailsService
     {
-
-
         private readonly DbContextAccess dbContextAccess;
         public ProductDetailsService productDetailsService;
         public VendorDetailsServices()
@@ -131,6 +129,7 @@ namespace Services
                 vendorDetails.State = vendorDetailsUpdateRequest.State;
                 vendorDetails.PostalCode = vendorDetailsUpdateRequest.PostalCode;
                 vendorDetails.Country = vendorDetailsUpdateRequest.Country;
+                vendorDetails.IsActive = true;
                 vendorDetails.TelePhone1 = vendorDetailsUpdateRequest.TelePhone1;
                 vendorDetails.TelePhone2 = vendorDetailsUpdateRequest.TelePhone2;
                 vendorDetails.VendorEmail = vendorDetailsUpdateRequest.VendorEmail;
