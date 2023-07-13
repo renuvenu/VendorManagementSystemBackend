@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Model;
 using Model.Requests;
 using Moq;
@@ -65,6 +66,34 @@ namespace UnitTest_VendorDetailsServices
             Assert.Equal(vendorDetailsRequest.TelePhone2, result.TelePhone2);
             Assert.Equal(vendorDetailsRequest.VendorEmail, result.VendorEmail);
             Assert.Equal(vendorDetailsRequest.VendorWebsite, result.VendorWebsite);
+        }
+       
+        [Fact]
+        public void GetVendorDetails_ReturnsCorrectData()
+        {
+                 var result = vendorDetailsServices.GetVendorDetails();
+                 Assert.NotNull(result);
+                 Assert.Equal(10, result.Count);
+          }
+
+
+        [Fact]
+        public void DeleteVendor_ReturnsDeletedVendor()
+        {
+           
+
+            var id = "F9472FA7-16BA-4120-40BB-08DB82BFB607";
+            if (Guid.TryParse(id, out Guid vendorId))
+            {
+                var deletedVendor = vendorDetailsServices.DeleteVendor(vendorId);
+                Assert.NotNull(deletedVendor);
+                Assert.Equal(vendorId, deletedVendor.Id);
+                Assert.False(deletedVendor.IsActive);
+
+            }
+
+            // Act
+           
         }
     }
 }
