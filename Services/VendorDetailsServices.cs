@@ -134,13 +134,7 @@ namespace Services
                     if(prod != null)
                     {
                         ids.Remove(prod.Id);
-                        //UpdateProductDetailRequest updateProductDetailRequest = new UpdateProductDetailRequest();
-                        //updateProductDetailRequest.Id = prod.Id;
-                        //updateProductDetailRequest.ProductName = prod.ProductName;
-                        //updateProductDetailRequest.ProductDescription = prod.ProductDescription;
-                        //updateProductDetailRequest.Price = prod.Price;
-                        //updateProductDetailRequest.IsActive = prod.IsActive;
-                        //productDetailsService.UpdateProductDetail(id,updateProductDetailRequest);
+       
                         prod.Price = product.Price;
                         prod.ProductName = product.ProductName;
                         prod.ProductDescription = product.ProductDescription;
