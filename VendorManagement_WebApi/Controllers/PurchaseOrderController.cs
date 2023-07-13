@@ -14,67 +14,62 @@ namespace VendorManagement_WebApi.Controllers
     [Route("[controller]")]
     public class PurchaseOrderController : Controller
     {
-        private readonly DbContextAccess dbContextAccess;
+        public PurchaseOrderService purchaseOrderService;
 
         public PurchaseOrderController(DbContextAccess dbContextAccess)
         {
-            this.dbContextAccess = dbContextAccess;
+            purchaseOrderService = new PurchaseOrderService(dbContextAccess);
         }
 
         [HttpPost]
         public async Task<IActionResult> addPurchaseOrder(PurchaseOrderRequest purchaseOrderRequest)
         {
-            PurchaseOrder purchaseOrder = new PurchaseOrder();
-            purchaseOrder.Id = new Guid();
-            purchaseOrder.UserId = purchaseOrderRequest.UserId;
-            purchaseOrder.BillingAddress = purchaseOrderRequest.BillingAddress;
-            purchaseOrder.BillingAddressCity = purchaseOrderRequest.BillingAddressCity;
-            purchaseOrder.BillingAddressState = purchaseOrderRequest.BillingAddressState;
-            purchaseOrder.BillingAddressCountry = purchaseOrderRequest.BillingAddressCountry;
-            purchaseOrder.BillingAddressZipcode =   purchaseOrderRequest.BillingAddressZipcode;
-            purchaseOrder.ShippingAddress = purchaseOrderRequest.ShippingAddress;
-            purchaseOrder.ShippingAddressCity = purchaseOrderRequest.ShippingAddressCity;
-            purchaseOrder.ShippingAddressState = purchaseOrderRequest.ShippingAddressState;
-            purchaseOrder.ShippingAddressCountry = purchaseOrderRequest.ShippingAddressCountry;
-            purchaseOrder.ShippingAddressZipcode = purchaseOrderRequest.ShippingAddressZipcode;
-            purchaseOrder.TermsAndConditions = purchaseOrderRequest.TermsAndConditions;
-            purchaseOrder.Description = purchaseOrderRequest.Description;
-            purchaseOrder.Status = "Pending";
-            purchaseOrder.Total = 0;
-            await dbContextAccess.PurchaseOrders.AddAsync(purchaseOrder);
-            await dbContextAccess.SaveChangesAsync();
-            ProductPurchaseOrderController productPurchaseOrderController = new ProductPurchaseOrderController(dbContextAccess);
-            purchaseOrderRequest.ProductsPurchased.ForEach(data =>
+            if(purchaseOrderRequest != null && purchaseOrderRequest.ProductsPurchased.Count() > 0)
             {
-                data.PurchaseOrderId = purchaseOrder.Id;
-                productPurchaseOrderController.InsertProductPurchaseOrder(data);
-            });
-            return Ok(purchaseOrder);
+                return Ok( purchaseOrderService.InsertPurchaseOrder(purchaseOrderRequest));
+            } else { return BadRequest("Invalid Purchase Order requested"); }
         }
 
         [HttpGet]
-        public async Task<IActionResult> getProductOrderDetails()
+        public async Task<IActionResult> GetPurchasedOrders()
         {
-            List<PurchaseOrder> purchaseOrders = new List<PurchaseOrder>(await dbContextAccess.PurchaseOrders.ToListAsync());
-            var res = from purchaseorder in purchaseOrders
-                      join ppo in dbContextAccess.productpurchaseorder on purchaseorder.Id equals ppo.PurchaseOrderId into productpurchasedetails
-                      //from vendor in dbcontextaccess.vendordetails where vendor.id == matchedproduct.elementat(0).vendorid
-                      select new
-                      {
-                          purchaseorder,
-                          productpurchasedetails
-                      };
+            return Ok(purchaseOrderService.GetPurchasedOrders());
 
-            var res2 = res.ToList();
-            return Ok(res);
-            //purchaseOrders.ForEach(async purchaseOrder =>
-            //{
-            //    //List<ProductPurchaseOrder> productPurchaseOrders = new List<ProductPurchaseOrder>(await dbContextAccess.productpurchaseorder.Where(data => data.PurchaseOrderId == purchaseOrder.Id).ToListAsync());
-            //    //productPurchaseOrders.ForEach(orders => )
-            //    //List<ProductPurchaseOrder> productPurchaseOrder = dbContextAccess.productpurchaseorder.AllAsync(data => data.PurchaseOrderId == purchaseOrder.Id);
-            //    var result = from productPurchaseOrder in productPurchaseOrders join ppo in dbContextAccess.productpurchaseorder on productPurchaseOrder.ProductId equals ppo.ProductId
-            //});
-            //return Ok(await dbContextAccess.PurchaseOrders.ToListAsync());
+        }
+
+        [HttpDelete]
+        [Route("{id:guid}")]
+        public async Task<IActionResult> DeletePurchaseOrder([FromRoute] Guid id)
+        {
+            var purchaseOrder = purchaseOrderService.DeletePurchaseOrder(id);
+            if (purchaseOrder != null)
+            {
+                return Ok(purchaseOrder);
+            }
+            return NotFound("Purchase order not found");
+        }
+
+        [HttpPut]
+        [Route("{id:guid}")]
+        public async Task<IActionResult> UpdatePurchaseOrder([FromRoute] Guid id,PurchaseOrderRequest purchaseOrderRequest)
+        {
+            if(purchaseOrderRequest != null && purchaseOrderRequest.ProductsPurchased.Count() > 0)
+            {
+                return Ok(purchaseOrderService.updatePurchaseOrder(id,purchaseOrderRequest));
+            }
+            return BadRequest("Invalid purchase order");
+        }
+
+        [HttpPut]
+        [Route("/status/{id:guid}")]
+        public async Task<IActionResult> UpdateStatus([FromRoute] Guid id)
+        {
+            var purchaseOrder = purchaseOrderService.UpdateStatus(id);
+            if (purchaseOrder != null)
+            {
+                return Ok(purchaseOrder);
+            }
+            return NotFound("Purchase order not found");
         }
     }
 }

@@ -91,7 +91,12 @@ namespace Services
             {
                 vendor.IsActive = false;
                 dbContextAccess.VendorDetails.Update(vendor);
-                dbContextAccess.SaveChanges(); 
+                dbContextAccess.SaveChanges();
+                List<ProductDetail> productDetails = dbContextAccess.productDetails.Where(product => product.VendorId == id).ToList();
+                productDetails.ForEach(prod =>
+                {
+                    productDetailsService.DeleteProductDetail(prod.Id);
+                });
             }
             return vendor;
             throw new NotImplementedException();

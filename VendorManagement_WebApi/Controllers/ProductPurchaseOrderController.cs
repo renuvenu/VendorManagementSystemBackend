@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Model.Requests;
 using Model;
 using Repository;
+using Services;
 
 namespace VendorManagement_WebApi.Controllers
 {
@@ -10,44 +11,17 @@ namespace VendorManagement_WebApi.Controllers
     [Route("api/[Controller]")]
     public class ProductPurchaseOrderController : Controller
     {
-        private readonly DbContextAccess productpurchasedetailDBContext1;
+        public ProductPurchaseOrderService productPurchaseOrderService;
 
-        public ProductPurchaseOrderController(DbContextAccess productpurchasedetailDBContext1)
+        public ProductPurchaseOrderController(DbContextAccess dbContextAccess)
         {
-            this.productpurchasedetailDBContext1 = productpurchasedetailDBContext1;
-        }
-
-        [HttpGet]
-
-        public async Task<IActionResult> GetProductPurchaseDetail()
-        {
-            return Ok(await productpurchasedetailDBContext1.productpurchaseorder.ToListAsync());
+            productPurchaseOrderService = new ProductPurchaseOrderService(dbContextAccess);
         }
 
         [HttpPost]
         public void InsertProductPurchaseOrder(InsertProductPurchaseRequest insertProductPurchaseRequest)
         {
-
-            if (insertProductPurchaseRequest != null)
-            {
-                ProductPurchaseOrder productpurchasedetail = new ProductPurchaseOrder();
-
-                productpurchasedetail.Id = new Guid();
-                productpurchasedetail.VendorId= insertProductPurchaseRequest.VendorId;
-                productpurchasedetail.PurchaseOrderId = insertProductPurchaseRequest.PurchaseOrderId;
-                productpurchasedetail.ProductId = insertProductPurchaseRequest.ProductId;
-                productpurchasedetail.Quantity = insertProductPurchaseRequest.Quantity;
-
-                productpurchasedetailDBContext1.productpurchaseorder.Add(productpurchasedetail);
-                productpurchasedetailDBContext1.SaveChanges();
-            }
-        }
-        [HttpGet]
-
-        [Route("{Id}")]
-        public async Task<IActionResult> GetElementById([FromRoute] Guid Id)
-        {
-            return await Task.FromResult<IActionResult>(Ok(productpurchasedetailDBContext1.productpurchaseorder.Where(x => x.Id.Equals(Id))));
+               productPurchaseOrderService.InsertProductPurchaseOrder(insertProductPurchaseRequest);
         }
     }
 }
