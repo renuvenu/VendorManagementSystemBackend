@@ -6,8 +6,19 @@ using Repository;
 
 namespace Services
 {
-    public class VendorDetailsServices
+
+    public interface InterfaceVendorDetailsService
     {
+        VendorDetails InsertVendorDetails(VendorDetailsRequest vendorDetailsRequest);
+
+        List<VendorDetailswithProductDetailsRequest> GetVendorDetails();
+        VendorDetails DeleteVendor(Guid id);
+        VendorDetailswithProductDetailsRequest GetVendor(Guid id); VendorDetailswithProductDetailsRequest UpdateVendor(Guid id, VendorDetailsUpdateRequest vendorDetailsUpdateRequest);
+    }
+    public class VendorDetailsServices : InterfaceVendorDetailsService
+    {
+
+
         private readonly DbContextAccess dbContextAccess;
         public ProductDetailsService productDetailsService;
         public VendorDetailsServices()
@@ -18,6 +29,7 @@ namespace Services
         {
             this.dbContextAccess = dbContextAccess;
             productDetailsService = new ProductDetailsService(dbContextAccess);
+            throw new NotImplementedException();
         }
 
         public VendorDetails InsertVendorDetails(VendorDetailsRequest vendorDetailsRequest)
@@ -47,6 +59,7 @@ namespace Services
 
             });
             return vendorDetails;
+            throw new NotImplementedException();
 
         }
 
@@ -69,6 +82,8 @@ namespace Services
                 });
             });
             return vendorDetailswithProductDetailsRequest;
+            throw new NotImplementedException();
+
         }
 
         public VendorDetails DeleteVendor(Guid id)
@@ -81,6 +96,8 @@ namespace Services
                 dbContextAccess.SaveChanges(); 
             }
             return vendor;
+            throw new NotImplementedException();
+
         }
 
         public VendorDetailswithProductDetailsRequest GetVendor(Guid id)
@@ -98,6 +115,8 @@ namespace Services
                     productDetails.VendorDetails = null;
                 });
             return vendorWithProductDetails;
+            throw new NotImplementedException();
+
         }
 
         public VendorDetailswithProductDetailsRequest UpdateVendor(Guid id, VendorDetailsUpdateRequest vendorDetailsUpdateRequest)
@@ -160,6 +179,8 @@ namespace Services
                
             }
             return GetVendor(id);
+            throw new NotImplementedException();
+
         }
     }
 
