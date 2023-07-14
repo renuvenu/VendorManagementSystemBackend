@@ -37,6 +37,7 @@ namespace Services
             vendorDetails.TelePhone2 = vendorDetailsRequest.TelePhone2;
             vendorDetails.VendorEmail = vendorDetailsRequest.VendorEmail;
             vendorDetails.VendorWebsite = vendorDetailsRequest.VendorWebsite;
+            vendorDetails.CreatedOn = DateTime.Now.ToString();
             dbContextAccess.VendorDetails.Add(vendorDetails);
             dbContextAccess.SaveChanges();
 
@@ -48,6 +49,11 @@ namespace Services
             });
             return vendorDetails;
 
+        }
+
+        public int CountOfVendors()
+        {
+            return dbContextAccess.VendorDetails.Where(x => x.IsActive).Count();
         }
 
         public List<VendorDetailswithProductDetailsRequest> GetVendorDetails()
@@ -77,6 +83,7 @@ namespace Services
             if (vendor != null)
             {
                 vendor.IsActive = false;
+                vendor.DeletedOn = DateTime.Now.ToString();
                 dbContextAccess.VendorDetails.Update(vendor);
                 dbContextAccess.SaveChanges();
                 List<ProductDetail> productDetails = dbContextAccess.productDetails.Where(product => product.VendorId == id).ToList();
@@ -121,6 +128,7 @@ namespace Services
                 vendorDetails.TelePhone2 = vendorDetailsUpdateRequest.TelePhone2;
                 vendorDetails.VendorEmail = vendorDetailsUpdateRequest.VendorEmail;
                 vendorDetails.VendorWebsite = vendorDetailsUpdateRequest.VendorWebsite;
+                vendorDetails.UpdatedOn = DateTime.Now.ToString();
                 dbContextAccess.VendorDetails.Update(vendorDetails);
                 dbContextAccess.SaveChanges();
 

@@ -32,6 +32,13 @@ namespace VendorManagement_WebApi.Controllers
         }
 
         [HttpGet]
+        [Route("/get/count/vendors")]
+        public async Task<IActionResult> CountOfVendors()
+        {
+            return Ok(vendorDetailsServices.CountOfVendors());
+        }
+
+        [HttpGet]
         public async Task<IActionResult> GetVendorWithProductDetails()
         {
             return Ok(vendorDetailsServices.GetVendorDetails());
