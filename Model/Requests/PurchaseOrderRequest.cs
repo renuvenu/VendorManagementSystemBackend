@@ -10,7 +10,7 @@ namespace Model.Requests
     public class PurchaseOrderRequest
     {
         [Required]
-        public Guid UserId { get; set; }
+        public int CreatedBy{ get; set; }
 
         [Required]
         [MaxLength(255)]
@@ -59,7 +59,6 @@ namespace Model.Requests
         [Required]
         [MaxLength(255)]
         public string? Description { get; set; }
-
 
         [Required]
         public List<InsertProductPurchaseRequest>? ProductsPurchased { get; set; }

@@ -12,7 +12,6 @@ namespace Model.Requests
         [Required]
         [MaxLength(255)]
         public string? VendorName { get; set; }
-        [Required]
         public bool IsActive { get; set; }
         [Required]
         public VendorType VendorType { get; set; }
