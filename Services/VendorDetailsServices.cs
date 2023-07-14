@@ -6,19 +6,33 @@ using Repository;
 
 namespace Services
 {
-    public class VendorDetailsServices
+
+    public interface InterfaceVendorDetailsService
+    {
+        VendorDetails InsertVendorDetails(VendorDetailsRequest vendorDetailsRequest);
+
+        List<VendorDetailswithProductDetailsRequest> GetVendorDetails();
+        VendorDetails DeleteVendor(Guid id);
+        VendorDetailswithProductDetailsRequest GetVendor(Guid id); VendorDetailswithProductDetailsRequest UpdateVendor(Guid id, VendorDetailsUpdateRequest vendorDetailsUpdateRequest);
+    }
+    public class VendorDetailsServices : InterfaceVendorDetailsService
     {
         private readonly DbContextAccess dbContextAccess;
         public ProductDetailsService productDetailsService;
+      
+
         public VendorDetailsServices()
         {
-
+            // Initialize dependencies or perform other setup if needed
         }
+
         public VendorDetailsServices(DbContextAccess dbContextAccess)
         {
             this.dbContextAccess = dbContextAccess;
             productDetailsService = new ProductDetailsService(dbContextAccess);
         }
+
+      
 
         public VendorDetails InsertVendorDetails(VendorDetailsRequest vendorDetailsRequest)
         {
@@ -48,6 +62,7 @@ namespace Services
 
             });
             return vendorDetails;
+            throw new NotImplementedException();
 
         }
 
@@ -75,6 +90,8 @@ namespace Services
                 });
             });
             return vendorDetailswithProductDetailsRequest;
+            throw new NotImplementedException();
+
         }
 
         public VendorDetails DeleteVendor(Guid id)
@@ -93,6 +110,8 @@ namespace Services
                 });
             }
             return vendor;
+            throw new NotImplementedException();
+
         }
 
         public VendorDetailswithProductDetailsRequest GetVendor(Guid id)
@@ -110,6 +129,8 @@ namespace Services
                     productDetails.VendorDetails = null;
                 });
             return vendorWithProductDetails;
+            throw new NotImplementedException();
+
         }
 
         public VendorDetailswithProductDetailsRequest UpdateVendor(Guid id, VendorDetailsUpdateRequest vendorDetailsUpdateRequest)
@@ -124,6 +145,7 @@ namespace Services
                 vendorDetails.State = vendorDetailsUpdateRequest.State;
                 vendorDetails.PostalCode = vendorDetailsUpdateRequest.PostalCode;
                 vendorDetails.Country = vendorDetailsUpdateRequest.Country;
+                vendorDetails.IsActive = true;
                 vendorDetails.TelePhone1 = vendorDetailsUpdateRequest.TelePhone1;
                 vendorDetails.TelePhone2 = vendorDetailsUpdateRequest.TelePhone2;
                 vendorDetails.VendorEmail = vendorDetailsUpdateRequest.VendorEmail;
@@ -173,6 +195,8 @@ namespace Services
                
             }
             return GetVendor(id);
+            throw new NotImplementedException();
+
         }
     }
 
