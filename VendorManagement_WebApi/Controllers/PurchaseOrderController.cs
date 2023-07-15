@@ -7,6 +7,8 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using Services;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace VendorManagement_WebApi.Controllers
 {
@@ -22,6 +24,7 @@ namespace VendorManagement_WebApi.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Approver,User")]
         public async Task<IActionResult> addPurchaseOrder(PurchaseOrderRequest purchaseOrderRequest)
         {
             if(purchaseOrderRequest != null && purchaseOrderRequest.ProductsPurchased.Count() > 0)
@@ -39,6 +42,7 @@ namespace VendorManagement_WebApi.Controllers
 
         [HttpDelete]
         [Route("{id:guid}")]
+        [Authorize(Roles = "Admin,Approver,User")]
         public async Task<IActionResult> DeletePurchaseOrder([FromRoute] Guid id)
         {
             var purchaseOrder = purchaseOrderService.DeletePurchaseOrder(id);
@@ -51,6 +55,7 @@ namespace VendorManagement_WebApi.Controllers
 
         [HttpPut]
         [Route("{id:guid}")]
+        [Authorize(Roles = "Admin,Approver,User")]
         public async Task<IActionResult> UpdatePurchaseOrder([FromRoute] Guid id,PurchaseOrderRequest purchaseOrderRequest)
         {
             if(purchaseOrderRequest != null && purchaseOrderRequest.ProductsPurchased.Count() > 0)
@@ -62,6 +67,7 @@ namespace VendorManagement_WebApi.Controllers
 
         [HttpPut]
         [Route("/status/{id:guid}/{approverId:int}")]
+        [Authorize(Roles = "Admin,Approver")]
         public async Task<IActionResult> UpdateStatus([FromRoute] Guid id, [FromRoute] int approverId)
         {
             var purchaseOrder = purchaseOrderService.UpdateStatus(id, approverId);

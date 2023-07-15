@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Repository;
 using Services;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +20,17 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 //builder.Services.AddDbContext<DbContextAccess>(ServiceLifetime.Transient);
 builder.Services.AddScoped<InterfaceVendorDetailsService, VendorDetailsServices>();
+builder.Services.AddAuthentication("Bearer").AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        ValidateAudience = false,
+        ValidateIssuer = false,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF32.GetBytes(
+                builder.Configuration.GetSection("AppSettings:Token").Value!))
+    };
+});
 
 var app = builder.Build();
 app.UseCors(policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
@@ -28,6 +41,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
+app.UseAuthentication();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

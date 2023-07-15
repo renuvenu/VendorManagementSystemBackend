@@ -5,6 +5,8 @@ using Repository;
 using Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace VendorManagement_WebApi.Controllers
 {
@@ -19,6 +21,7 @@ namespace VendorManagement_WebApi.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> InsertVendorDetails(VendorDetailsRequest vendorDetailsRequest)
         {
             if(vendorDetailsRequest != null && vendorDetailsRequest.ProductDetailsRequest.Count>0) {
@@ -59,6 +62,7 @@ namespace VendorManagement_WebApi.Controllers
 
         [HttpDelete]
         [Route("{id:guid}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteVendor([FromRoute] Guid id)
         {
             return Ok(vendorDetailsServices.DeleteVendor(id));
@@ -66,6 +70,7 @@ namespace VendorManagement_WebApi.Controllers
 
         [HttpPut]
         [Route("{id:guid}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateVendor([FromRoute] Guid id, VendorDetailsUpdateRequest vendorDetailsUpdateRequest)
         {
             if (vendorDetailsUpdateRequest != null && vendorDetailsUpdateRequest.ProductDetailsRequest.Count>0)

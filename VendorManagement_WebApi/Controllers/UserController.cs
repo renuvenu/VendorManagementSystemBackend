@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Model;
 using Model.Requests;
 using Repository;
@@ -18,12 +19,14 @@ namespace VendorManagement_WebApi.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> getAllUsers()
         {
             return Ok(userService.GetUsers());
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         [Route("/user-requests/pending")]
         public async Task<IActionResult> GetAllApprovalPendingRequests()
         {
@@ -31,6 +34,7 @@ namespace VendorManagement_WebApi.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         [Route("/user-requests/approved")]
         public async Task<IActionResult> GetAllApprovalApprovedRequests()
         {
@@ -39,12 +43,14 @@ namespace VendorManagement_WebApi.Controllers
 
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         [Route("/user-requests/declined")]
         public async Task<IActionResult> GetAllApprovalDeclinedRequests()
         {
             return Ok(userService.GetAllApprovalDeclinedRequests());
         }
 
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> InsertUser(UserRegisterRequest userRegisterRequest)
         {
@@ -56,12 +62,13 @@ namespace VendorManagement_WebApi.Controllers
            return BadRequest("Invalid user request");
         }
 
+        [AllowAnonymous]
         [HttpPost]
         [Route("/login")]
         public async Task<IActionResult> LoginUser([FromBody] LoginRequest loginRequest)
         {
-            User user = userService.LoginUser(loginRequest).User;
-            if(user != null && user.Id > 0)
+            var user = userService.LoginUser(loginRequest);
+            if(user.User != null && user.User.Id > 0)
             {
                 return Ok(userService.LoginUser(loginRequest));
             }
@@ -71,6 +78,7 @@ namespace VendorManagement_WebApi.Controllers
 
         [HttpPut]
         [Route("{id:int}")]
+        [Authorize(Roles = "Admin,Approver")]
         public async Task<IActionResult> UpdateUser([FromRoute] int id,UserRegisterRequest userRegisterRequest)
         {
             return Ok();
@@ -78,6 +86,7 @@ namespace VendorManagement_WebApi.Controllers
 
         [HttpPut]
         [Route("/update/{id:int}/{approverId:int}/{status}")]
+        [Authorize(Roles = "Admin,Approver")]
         public async Task<IActionResult> UpdateApprovalStatus([FromRoute] int id, [FromRoute] int approverId, [FromRoute] string status)
         {
             var user = userService.UpdateApprovalStatus(id,approverId,status);
@@ -91,6 +100,7 @@ namespace VendorManagement_WebApi.Controllers
 
         [HttpDelete]
         [Route("{id:int}/{deletedBy:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUser([FromRoute] int id, [FromRoute] int deletedBy)
         {
            var user = userService.DeleteUser(id, deletedBy);
@@ -103,6 +113,7 @@ namespace VendorManagement_WebApi.Controllers
 
         [HttpGet]
         [Route("/get/approvalStatus{id:int}")]
+        [Authorize(Roles = "Admin,Approver")]
         public async Task<IActionResult> getApprovalStatus([FromRoute] int id)
         {
             return Ok(userService.getApprovalStatus(id));
