@@ -44,9 +44,11 @@ namespace Model
 
         public string? VendorWebsite { get; set; }
 
-        public void InsertVendorDetails(VendorDetailsRequest vendorDetailsRequest)
-        {
-            throw new NotImplementedException();
-        }
+        public string? CreatedOn { get; set; }
+
+        public string? UpdatedOn { get;set; }
+
+        public string? DeletedOn { get; set; }
+
     }
 }

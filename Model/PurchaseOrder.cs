@@ -7,9 +7,11 @@ namespace Model
     {
         public Guid Id { get; set; }
 
-        [Required]
-        [ForeignKey("UserId")] //need to add relation to table
-        public Guid? UserId { get; set; }
+        //[Display(Name = "User")]
+        public int CreatedBy { get; set; }
+
+        //[ForeignKey("CreatedBy")]
+        //public virtual User? User { get; set; }
 
         public string? TrackingNumber { get; set; }
 
@@ -19,8 +21,11 @@ namespace Model
         [Required]
         public string? DueDate { get; set; } = DateTime.Now.ToString();
 
-        [ForeignKey("ApprovedBy")]//need to add relation to table
-        public virtual Guid? ApprovedBy { get; set; }
+        //[Display(Name = "User")]
+        public int ApprovedBy { get; set; }
+
+        //[ForeignKey("ApprovedBy")]
+        //public virtual User? User1 { get; set; }
 
         public string? ApprovedDateTime { get; set; }
 
