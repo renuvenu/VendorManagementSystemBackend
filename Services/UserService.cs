@@ -32,7 +32,7 @@ namespace Services
             
         }
 
-        public User InsertUser(UserRegisterRequest userRegisterRequest)
+        public async Task<ActionResult<User>> InsertUser(UserRegisterRequest userRegisterRequest)
         {
             User user = new User();
             if (userRegisterRequest != null && dbContextAccess.Users.Where(x => x.Email == userRegisterRequest.Email).ToList().Count() == 0)
@@ -52,25 +52,25 @@ namespace Services
                 {
                     user.ApprovalStatus = "Approved";
                 }
-                dbContextAccess.Users.Add(user);
-                dbContextAccess.SaveChanges();
+                await dbContextAccess.Users.AddAsync(user);
+                await dbContextAccess.SaveChangesAsync();
                 
             }
             return user;
         }
 
-        public LoginResponse LoginUser(LoginRequest loginRequest)
+        public async Task<ActionResult<LoginResponse>> LoginUser(LoginRequest loginRequest)
         {
             if (loginRequest != null)
             {
                 User user1 = dbContextAccess.Users.FirstOrDefault(x => x.Email == loginRequest.Email);
                 if (user1 != null && BCrypt.Net.BCrypt.Verify(loginRequest.Password, user1.Password))
                 {
-                    user1.Role = dbContextAccess.Roles.Find(user1.RoleId);
+                    user1.Role =await dbContextAccess.Roles.FindAsync(user1.RoleId);
                     if ((user1.Role.Name == "Approver" || user1.Role.Name == "User") && user1.ApprovalStatus != "Approved")
                     {
                         user1.RoleId = dbContextAccess.Roles.FirstOrDefault(x => x.Name == "Readonly").Id;
-                        user1.Role = dbContextAccess.Roles.Find(user1.RoleId);
+                        user1.Role =await dbContextAccess.Roles.FindAsync(user1.RoleId);
                     }
                     string token = CreateToken(user1);
                     return new LoginResponse
@@ -108,16 +108,16 @@ namespace Services
             return jwt;
         }
 
-        public List<User> GetUsers()
+        public async Task<ActionResult<List<User>>> GetUsers()
         {
-            var users = dbContextAccess.Users.ToList();
+            List<User> users =await dbContextAccess.Users.ToListAsync();
             users.ForEach(user => user.Role = dbContextAccess.Roles.Find(user.RoleId));
             return users;
         }
 
-        public User UpdateApprovalStatus(int id,int approverId,string status)
+        public async Task<ActionResult<User>> UpdateApprovalStatus(int id,int approverId,string status)
         {
-            var user = dbContextAccess.Users.Find(id);
+            var user =await dbContextAccess.Users.FindAsync(id);
             if (user != null) {
                 user.ApprovalStatus = status;
                 user.ApprovedBy = approverId;
@@ -125,46 +125,46 @@ namespace Services
                 user.UpdatedOn = DateTime.Now.ToString();
                 user.Role = dbContextAccess.Roles.Find(user.RoleId);
                 dbContextAccess.Users.Update(user);
-                dbContextAccess.SaveChanges();
+                await dbContextAccess.SaveChangesAsync();
             }
             return user;
         }
-        public User DeleteUser(int id,int deletedBy)
+        public async Task<ActionResult<User>> DeleteUser(int id,int deletedBy)
         {
-            var user = dbContextAccess.Users.Find(id);
+            var user =await dbContextAccess.Users.FindAsync(id);
             if (user != null)
             {
                 user.IsActive = false;
                 user.DeletedBy = deletedBy;
                 user.DeletedOn = DateTime.Now.ToString();
                 dbContextAccess.Users.Update(user);
-                dbContextAccess.SaveChanges();
+                await dbContextAccess.SaveChangesAsync();
             }
             return user;
         }
 
-        public List<User> GetAllApprovalPendingRequests()
+        public async Task<ActionResult<List<User>>> GetAllApprovalPendingRequests()
         {
-            var users = dbContextAccess.Users.Where(x => x.ApprovalStatus == "Pending").ToList();
+            var users =await dbContextAccess.Users.Where(x => x.ApprovalStatus == "Pending").ToListAsync();
             users.ForEach(user => user.Role = dbContextAccess.Roles.Find(user.RoleId));
             return users;
         }
 
-        public List<User> GetAllApprovalApprovedRequests()
+        public async Task<ActionResult<List<User>>> GetAllApprovalApprovedRequests()
         {
-            var users = dbContextAccess.Users.Where(x => x.ApprovalStatus == "Approved").ToList();
+            var users =await dbContextAccess.Users.Where(x => x.ApprovalStatus == "Approved").ToListAsync();
             users.ForEach(user => user.Role = dbContextAccess.Roles.Find(user.RoleId));
             return users;
         }
 
-        public List<User> GetAllApprovalDeclinedRequests()
+        public async Task<ActionResult<List<User>>> GetAllApprovalDeclinedRequests()
         {
-            var users = dbContextAccess.Users.Where(x => x.ApprovalStatus == "Declined").ToList();
+            var users =await dbContextAccess.Users.Where(x => x.ApprovalStatus == "Declined").ToListAsync();
             users.ForEach(user => user.Role = dbContextAccess.Roles.Find(user.RoleId));
             return users;
         }
 
-        public string getApprovalStatus(int id)
+        public async Task<ActionResult<string>> getApprovalStatus(int id)
         {
             return dbContextAccess.Users.Find(id).ApprovalStatus;
         }
