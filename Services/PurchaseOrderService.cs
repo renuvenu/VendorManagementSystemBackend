@@ -74,6 +74,31 @@ namespace Services
             return purchaseOrderWithProductDetails;
         }
 
+
+        public List<PurchaseOrderWithProductDetails> GetAllPendingPurchaseOrders()
+        {
+            List<PurchaseOrderWithProductDetails> purchaseOrderWithProductDetails = new List<PurchaseOrderWithProductDetails>();
+            purchaseOrderWithProductDetails = dbContextAccess.PurchaseOrders.Where(purchase => purchase.IsActive && purchase.Status == "Pending").ToList().Select(purchaseOrder => new PurchaseOrderWithProductDetails
+            {
+                PurchaseOrders = purchaseOrder,
+                PurchaseProducts = dbContextAccess.productpurchaseorder.Where(prod => prod.PurchaseOrderId == purchaseOrder.Id && prod.IsActive).ToList().Select(purchase => new PurchaseProductDetails
+                {
+                    Quantity = purchase.Quantity,
+                    Price = dbContextAccess.productDetails.Find(purchase.ProductId).Price,
+                    ProductDescription = dbContextAccess.productDetails.Find(purchase.ProductId).ProductDescription,
+                    ProductName = dbContextAccess.productDetails.Find(purchase.ProductId).ProductName,
+                    ProductId = purchase.Id
+                }).ToList(),
+                VendorForPurchaseOrder = dbContextAccess.productpurchaseorder.Where(e => e.PurchaseOrderId == purchaseOrder.Id).ToList().Select(purchase => new VendorForPurchaseOrder
+                {
+                    Id = purchase.Id,
+                    VendorName = dbContextAccess.VendorDetails.Find(purchase.VendorId).VendorName,
+                    VendorType = dbContextAccess.VendorDetails.Find(purchase.VendorId).VendorType
+                }).ToList().Last(),
+            }).ToList();
+            return purchaseOrderWithProductDetails;
+        }
+
         public decimal GetTotalAmount(Guid purchaseOrderId)
         {
             decimal totalAmount = 0;

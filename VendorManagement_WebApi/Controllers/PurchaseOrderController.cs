@@ -107,6 +107,12 @@ namespace VendorManagement_WebApi.Controllers
             return Ok(purchaseOrderService.GetCountOfAllPendingPurchaseOrders());
         }
 
+        [HttpGet]
+        [Route("get/all/pending/purchase-orders")]
+        public async Task<IActionResult> GetAllPendingPurchaseOrders()
+        {
+            return Ok(purchaseOrderService.GetAllPendingPurchaseOrders());
+        }
 
     }
 }
