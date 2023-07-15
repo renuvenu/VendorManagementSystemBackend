@@ -13,8 +13,8 @@ namespace VendorManagement_WebApi.Controllers
     {
         public UserService userService;
 
-        public UserController(DbContextAccess dbContextAccess) { 
-            userService = new UserService(dbContextAccess);
+        public UserController(DbContextAccess dbContextAccess,IConfiguration configuration) { 
+            userService = new UserService(dbContextAccess,configuration);
         }
 
         [HttpGet]
@@ -60,10 +60,10 @@ namespace VendorManagement_WebApi.Controllers
         [Route("/login")]
         public async Task<IActionResult> LoginUser([FromBody] LoginRequest loginRequest)
         {
-            User user = userService.LoginUser(loginRequest);
+            User user = userService.LoginUser(loginRequest).User;
             if(user != null && user.Id > 0)
             {
-                return Ok(user);
+                return Ok(userService.LoginUser(loginRequest));
             }
             return NotFound("User not found");
         }
