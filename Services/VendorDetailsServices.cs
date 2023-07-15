@@ -36,33 +36,35 @@ namespace Services
 
         public VendorDetails InsertVendorDetails(VendorDetailsRequest vendorDetailsRequest)
         {
-            ProductDetail productDetail = new ProductDetail();
-            VendorDetails vendorDetails = new VendorDetails();
-            vendorDetails.Id = new Guid();
-            vendorDetails.VendorName = vendorDetailsRequest.VendorName;
-            vendorDetails.IsActive = true;
-            vendorDetails.AddressLine1 = vendorDetailsRequest.AddressLine1;
-            vendorDetails.AddressLine2 = vendorDetailsRequest.AddressLine2;
-            vendorDetails.City = vendorDetailsRequest.City;
-            vendorDetails.State = vendorDetailsRequest.State;
-            vendorDetails.PostalCode = vendorDetailsRequest.PostalCode;
-            vendorDetails.Country = vendorDetailsRequest.Country;
-            vendorDetails.TelePhone1 = vendorDetailsRequest.TelePhone1;
-            vendorDetails.TelePhone2 = vendorDetailsRequest.TelePhone2;
-            vendorDetails.VendorEmail = vendorDetailsRequest.VendorEmail;
-            vendorDetails.VendorWebsite = vendorDetailsRequest.VendorWebsite;
-            vendorDetails.CreatedOn = DateTime.Now.ToString();
-            dbContextAccess.VendorDetails.Add(vendorDetails);
-            dbContextAccess.SaveChanges();
-
-            vendorDetailsRequest.ProductDetailsRequest.ForEach(product =>
+            if (vendorDetailsRequest != null && vendorDetailsRequest.ProductDetailsRequest.Count > 0)
             {
-                product.VendorId = vendorDetails.Id;
-                productDetailsService.InsertProductDetail(product);
+                ProductDetail productDetail = new ProductDetail();
+                VendorDetails vendorDetails = new VendorDetails();
+                vendorDetails.Id = new Guid();
+                vendorDetails.VendorName = vendorDetailsRequest.VendorName;
+                vendorDetails.IsActive = true;
+                vendorDetails.AddressLine1 = vendorDetailsRequest.AddressLine1;
+                vendorDetails.AddressLine2 = vendorDetailsRequest.AddressLine2;
+                vendorDetails.City = vendorDetailsRequest.City;
+                vendorDetails.State = vendorDetailsRequest.State;
+                vendorDetails.PostalCode = vendorDetailsRequest.PostalCode;
+                vendorDetails.Country = vendorDetailsRequest.Country;
+                vendorDetails.TelePhone1 = vendorDetailsRequest.TelePhone1;
+                vendorDetails.TelePhone2 = vendorDetailsRequest.TelePhone2;
+                vendorDetails.VendorEmail = vendorDetailsRequest.VendorEmail;
+                vendorDetails.VendorWebsite = vendorDetailsRequest.VendorWebsite;
+                dbContextAccess.VendorDetails.Add(vendorDetails);
+                dbContextAccess.SaveChanges();
 
-            });
-            return vendorDetails;
-            throw new NotImplementedException();
+                vendorDetailsRequest.ProductDetailsRequest.ForEach(product =>
+                {
+                    product.VendorId = vendorDetails.Id;
+                    productDetailsService.InsertProductDetail(product);
+
+                });
+                return vendorDetails;
+            }
+            return null;
 
         }
 
@@ -114,8 +116,31 @@ namespace Services
 
         }
 
+
+
+        public VendorDetails DeleteTestVendor(Guid id)
+        {
+            var vendor = dbContextAccess.VendorDetails.FirstOrDefault(p => p.Id == id);
+            if (vendor != null)
+            {
+                
+                dbContextAccess.VendorDetails.Remove(vendor);
+                dbContextAccess.SaveChanges();
+                List<ProductDetail> productDetails = dbContextAccess.productDetails.Where(product => product.VendorId == id).ToList();
+                productDetails.ForEach(prod =>
+                {
+                    productDetailsService.DeleteTestProductDetail(prod.Id);
+                });
+            }
+            return vendor;
+            throw new NotImplementedException();
+
+        }
+
+
         public VendorDetailswithProductDetailsRequest GetVendor(Guid id)
         {
+
             var vendorWithProductDetails = dbContextAccess.VendorDetails
                 .Where(v => v.Id == id && v.IsActive)
                 .Select(vendor => new VendorDetailswithProductDetailsRequest
@@ -124,17 +149,25 @@ namespace Services
                     ProductDetails = dbContextAccess.productDetails.Where(p => p.VendorId == vendor.Id && p.IsActive).ToList()
                 })
                 .SingleOrDefault();
+            if (vendorWithProductDetails != null)
+            {
                 vendorWithProductDetails.ProductDetails.ForEach(productDetails =>
-                {
-                    productDetails.VendorDetails = null;
-                });
-            return vendorWithProductDetails;
-            throw new NotImplementedException();
+                    {
+                        productDetails.VendorDetails = null;
+                    });
+                   return vendorWithProductDetails;
+            }
+            else
+            {
+                return null;
+            }
+            
 
         }
 
         public VendorDetailswithProductDetailsRequest UpdateVendor(Guid id, VendorDetailsUpdateRequest vendorDetailsUpdateRequest)
         {
+            
             VendorDetails vendorDetails = dbContextAccess.VendorDetails.FirstOrDefault(v => v.Id == id && v.IsActive);
             if(vendorDetails != null)
             {
