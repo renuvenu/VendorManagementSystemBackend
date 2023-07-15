@@ -20,7 +20,7 @@ namespace Services
         {
             PurchaseOrder purchaseOrder = new PurchaseOrder();
             purchaseOrder.Id = new Guid();
-            purchaseOrder.UserId = purchaseOrderRequest.UserId;
+            purchaseOrder.CreatedBy = purchaseOrderRequest.CreatedBy;
             purchaseOrder.BillingAddress = purchaseOrderRequest.BillingAddress;
             purchaseOrder.BillingAddressCity = purchaseOrderRequest.BillingAddressCity;
             purchaseOrder.BillingAddressState = purchaseOrderRequest.BillingAddressState;
@@ -54,6 +54,31 @@ namespace Services
         {
             List<PurchaseOrderWithProductDetails> purchaseOrderWithProductDetails = new List<PurchaseOrderWithProductDetails>();
             purchaseOrderWithProductDetails = dbContextAccess.PurchaseOrders.Where(purchase => purchase.IsActive).ToList().Select(purchaseOrder => new PurchaseOrderWithProductDetails
+            {
+                PurchaseOrders = purchaseOrder,
+                PurchaseProducts = dbContextAccess.productpurchaseorder.Where(prod => prod.PurchaseOrderId == purchaseOrder.Id && prod.IsActive).ToList().Select(purchase => new PurchaseProductDetails
+                {
+                    Quantity = purchase.Quantity,
+                    Price = dbContextAccess.productDetails.Find(purchase.ProductId).Price,
+                    ProductDescription = dbContextAccess.productDetails.Find(purchase.ProductId).ProductDescription,
+                    ProductName = dbContextAccess.productDetails.Find(purchase.ProductId).ProductName,
+                    ProductId = purchase.Id
+                }).ToList(),
+                VendorForPurchaseOrder = dbContextAccess.productpurchaseorder.Where(e => e.PurchaseOrderId == purchaseOrder.Id).ToList().Select(purchase => new VendorForPurchaseOrder
+                {
+                    Id = purchase.Id,
+                    VendorName = dbContextAccess.VendorDetails.Find(purchase.VendorId).VendorName,
+                    VendorType = dbContextAccess.VendorDetails.Find(purchase.VendorId).VendorType
+                }).ToList().Last(),
+            }).ToList();
+            return purchaseOrderWithProductDetails;
+        }
+
+
+        public List<PurchaseOrderWithProductDetails> GetAllPendingPurchaseOrders()
+        {
+            List<PurchaseOrderWithProductDetails> purchaseOrderWithProductDetails = new List<PurchaseOrderWithProductDetails>();
+            purchaseOrderWithProductDetails = dbContextAccess.PurchaseOrders.Where(purchase => purchase.IsActive && purchase.Status == "Pending").ToList().Select(purchaseOrder => new PurchaseOrderWithProductDetails
             {
                 PurchaseOrders = purchaseOrder,
                 PurchaseProducts = dbContextAccess.productpurchaseorder.Where(prod => prod.PurchaseOrderId == purchaseOrder.Id && prod.IsActive).ToList().Select(purchase => new PurchaseProductDetails
@@ -112,7 +137,7 @@ namespace Services
             if(purchaseOrder != null)
             {
                 purchaseOrder.Id = purchaseOrder.Id;
-                purchaseOrder.UserId = purchaseOrderRequest.UserId;
+                purchaseOrder.CreatedBy = purchaseOrderRequest.CreatedBy;
                 purchaseOrder.BillingAddress = purchaseOrderRequest.BillingAddress;
                 purchaseOrder.BillingAddressCity = purchaseOrderRequest.BillingAddressCity;
                 purchaseOrder.BillingAddressState = purchaseOrderRequest.BillingAddressState;
@@ -163,16 +188,113 @@ namespace Services
             return purchaseOrder;
         }
         
-        public PurchaseOrder UpdateStatus(Guid id)
+        public PurchaseOrder UpdateStatus(Guid id, int approverId)
         {
             var purchase = dbContextAccess.PurchaseOrders.FirstOrDefault(x => x.Id == id && x.IsActive);
             if(purchase != null)
             {
                 purchase.Status = "Approved";
+                purchase.ApprovedBy = approverId;
+                purchase.ApprovedDateTime = DateTime.Now.ToString();
                 dbContextAccess.PurchaseOrders.Update(purchase); 
-                dbContextAccess.SaveChanges();
+                dbContextAccess.SaveChanges(); 
             }
             return purchase;
+        }
+
+        public decimal GetCurrentMonthExpense()
+        {
+            decimal total = 0;
+            var currentMonth = DateTime.Now.Month;
+            var purchaseOrders = dbContextAccess.PurchaseOrders.ToList();
+            purchaseOrders.ForEach(x =>
+            {
+                if(x.Status == "Approved" && x.IsActive && DateTime.Parse(x.ApprovedDateTime).Month == currentMonth)
+                {
+                    total += (decimal)x.Total;
+                }
+            });
+            return total;
+        }
+
+        public decimal GetCurrentYearExpense()
+        {
+            decimal total = 0;
+            var currentYear = DateTime.Now.Year;
+            var purchaseOrders = dbContextAccess.PurchaseOrders.ToList();
+            purchaseOrders.ForEach(x =>
+            {
+                if (x.Status == "Approved" && x.IsActive && DateTime.Parse(x.ApprovedDateTime).Year == currentYear)
+                {
+                    total += (decimal)x.Total;
+                }
+            });
+            return total;
+        }
+
+        public List<decimal> GetListOfExpensesForMonth()
+        {
+            List<decimal> list = new List<decimal>();
+            var purchaseOrders = dbContextAccess.PurchaseOrders.ToList();
+            for (int i = 1; i <= 12;i++)
+            {
+                decimal total = 0; 
+                purchaseOrders.ForEach(x =>
+                {
+                    if (x.Status == "Approved" && x.IsActive && DateTime.Parse(x.ApprovedDateTime).Month == i)
+                    {
+                        total += (decimal)x.Total;
+                    }
+                });
+                list.Add(total);
+            }
+            return list;
+        }
+
+        public GetVendorsWithExpense GetAllExpensesByVendor()
+        {
+            List<string> vendors = new List<string>();
+            List<Guid> vendorsIds = new List<Guid>();
+            List<decimal> expenses = new List<decimal>();
+            dbContextAccess.VendorDetails.ToList().ForEach(x =>
+            {
+                if (x.IsActive)
+                {
+                    vendors.Add(x.VendorName);
+                    vendorsIds.Add(x.Id);
+                }
+            });
+            vendorsIds.ForEach(id =>
+            {
+                decimal total = 0;
+                var productPurchaseOrders = dbContextAccess.productpurchaseorder.Where(x => x.VendorId == id && x.IsActive).ToList();
+                HashSet<Guid> guids = new HashSet<Guid>();
+                productPurchaseOrders.ForEach(x =>
+                {
+                    guids.Add((Guid)x.PurchaseOrderId);
+                });
+                guids.ToList().ForEach(x =>
+                {
+                    var purchaseOrder = dbContextAccess.PurchaseOrders.Find(x);
+                    if(purchaseOrder != null && purchaseOrder.IsActive && purchaseOrder.Status == "Approved")
+                    {
+                        total += (decimal)purchaseOrder.Total;
+                    }
+                });
+                expenses.Add(total);
+
+            });
+
+            return new GetVendorsWithExpense
+            {
+                vendors = vendors,
+                expenses = expenses
+            };
+        }
+
+        public int GetCountOfAllPendingPurchaseOrders()
+        {
+            return dbContextAccess.PurchaseOrders.Where(x => x.IsActive && x.Status == "Pending").Count();
         }
     }
 }

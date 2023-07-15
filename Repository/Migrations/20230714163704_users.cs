@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Repository.Migrations
 {
     /// <inheritdoc />
-    public partial class initMig : Migration
+    public partial class users : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,11 +16,11 @@ namespace Repository.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedBy = table.Column<int>(type: "int", nullable: false),
                     TrackingNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     OrderDateTime = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DueDate = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ApprovedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ApprovedBy = table.Column<int>(type: "int", nullable: false),
                     ApprovedDateTime = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     BillingAddress = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     BillingAddressCity = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
@@ -44,6 +44,19 @@ namespace Repository.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Roles",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Roles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "VendorDetails",
                 columns: table => new
                 {
@@ -60,11 +73,45 @@ namespace Repository.Migrations
                     TelePhone1 = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TelePhone2 = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     VendorEmail = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    VendorWebsite = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    VendorWebsite = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedOn = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedOn = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DeletedOn = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_VendorDetails", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedOn = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedOn = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    ApprovalStatus = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ApprovedBy = table.Column<int>(type: "int", nullable: true),
+                    ApprovedOn = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DeletedOn = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DeletedBy = table.Column<int>(type: "int", nullable: true),
+                    RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Users_Roles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "Roles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -139,6 +186,11 @@ namespace Repository.Migrations
                 name: "IX_productpurchaseorder_VendorId",
                 table: "productpurchaseorder",
                 column: "VendorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_RoleId",
+                table: "Users",
+                column: "RoleId");
         }
 
         /// <inheritdoc />
@@ -148,10 +200,16 @@ namespace Repository.Migrations
                 name: "productpurchaseorder");
 
             migrationBuilder.DropTable(
+                name: "Users");
+
+            migrationBuilder.DropTable(
                 name: "PurchaseOrders");
 
             migrationBuilder.DropTable(
                 name: "productDetails");
+
+            migrationBuilder.DropTable(
+                name: "Roles");
 
             migrationBuilder.DropTable(
                 name: "VendorDetails");

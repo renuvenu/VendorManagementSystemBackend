@@ -61,15 +61,58 @@ namespace VendorManagement_WebApi.Controllers
         }
 
         [HttpPut]
-        [Route("/status/{id:guid}")]
-        public async Task<IActionResult> UpdateStatus([FromRoute] Guid id)
+        [Route("/status/{id:guid}/{approverId:int}")]
+        public async Task<IActionResult> UpdateStatus([FromRoute] Guid id, [FromRoute] int approverId)
         {
-            var purchaseOrder = purchaseOrderService.UpdateStatus(id);
+            var purchaseOrder = purchaseOrderService.UpdateStatus(id, approverId);
             if (purchaseOrder != null)
             {
                 return Ok(purchaseOrder);
             }
             return NotFound("Purchase order not found");
         }
+
+        [HttpGet]
+        [Route("get/currentMonth/expense")]
+        public async Task<IActionResult> GetCurrentMonthExpense()
+        {
+            return Ok(purchaseOrderService.GetCurrentMonthExpense());
+        }
+
+        [HttpGet]
+        [Route("get/currentYear/expense")]
+        public async Task<IActionResult> GetCurrentYearExpense()
+        {
+            return Ok(purchaseOrderService.GetCurrentYearExpense());
+        }
+
+        [HttpGet]
+        [Route("get/currentYear/list-expenses")]
+        public async Task<IActionResult> GetListOfExpensesForMonth()
+        {
+            return Ok(purchaseOrderService.GetListOfExpensesForMonth());
+        }
+
+        [HttpGet]
+        [Route("get/all-expenses/vendors")]
+        public async Task<IActionResult> GetAllExpensesByVendor()
+        {
+            return Ok(purchaseOrderService.GetAllExpensesByVendor());
+        }
+
+        [HttpGet]
+        [Route("get/count/pending/purchase-orders")]
+        public async Task<IActionResult> GetCountOfAllPendingPurchaseOrders()
+        {
+            return Ok(purchaseOrderService.GetCountOfAllPendingPurchaseOrders());
+        }
+
+        [HttpGet]
+        [Route("get/all/pending/purchase-orders")]
+        public async Task<IActionResult> GetAllPendingPurchaseOrders()
+        {
+            return Ok(purchaseOrderService.GetAllPendingPurchaseOrders());
+        }
+
     }
 }
