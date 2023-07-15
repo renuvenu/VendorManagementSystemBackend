@@ -51,7 +51,6 @@ namespace Services
             vendorDetails.TelePhone2 = vendorDetailsRequest.TelePhone2;
             vendorDetails.VendorEmail = vendorDetailsRequest.VendorEmail;
             vendorDetails.VendorWebsite = vendorDetailsRequest.VendorWebsite;
-            vendorDetails.CreatedOn = DateTime.Now.ToString();
             dbContextAccess.VendorDetails.Add(vendorDetails);
             dbContextAccess.SaveChanges();
 
