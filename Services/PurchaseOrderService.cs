@@ -1,6 +1,8 @@
 ﻿using Repository;
 using Model;
 using Model.Requests;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Services
 {
@@ -16,7 +18,7 @@ namespace Services
             productPurchaseOrderService = new ProductPurchaseOrderService(dbContextAccess);
         }
 
-        public PurchaseOrder InsertPurchaseOrder(PurchaseOrderRequest purchaseOrderRequest)
+        public async Task<ActionResult<PurchaseOrder>> InsertPurchaseOrder(PurchaseOrderRequest purchaseOrderRequest)
         {
             PurchaseOrder purchaseOrder = new PurchaseOrder();
             purchaseOrder.Id = new Guid();
@@ -36,8 +38,8 @@ namespace Services
             purchaseOrder.Status = "Pending";
             purchaseOrder.IsActive = true;
             purchaseOrder.Total = 0;
-            dbContextAccess.PurchaseOrders.Add(purchaseOrder);
-            dbContextAccess.SaveChanges();
+            await dbContextAccess.PurchaseOrders.AddAsync(purchaseOrder);
+            await dbContextAccess.SaveChangesAsync();
             purchaseOrderRequest.ProductsPurchased.ForEach(data =>
             {
                 data.PurchaseOrderId = purchaseOrder.Id;
@@ -45,17 +47,49 @@ namespace Services
             });
             purchaseOrder.Total = GetTotalAmount(purchaseOrder.Id);
             dbContextAccess.PurchaseOrders.Update(purchaseOrder);
-            dbContextAccess.SaveChanges();
+            await dbContextAccess.SaveChangesAsync();
 
             return purchaseOrder;
         }
 
-       public List<PurchaseOrderWithProductDetails> GetPurchasedOrders()
+       public async Task<ActionResult<List<PurchaseOrderWithProdDetailsWithUserName>>> GetPurchasedOrders()
         {
-            List<PurchaseOrderWithProductDetails> purchaseOrderWithProductDetails = new List<PurchaseOrderWithProductDetails>();
-            purchaseOrderWithProductDetails = dbContextAccess.PurchaseOrders.Where(purchase => purchase.IsActive).ToList().Select(purchaseOrder => new PurchaseOrderWithProductDetails
+            List<PurchaseOrderWithProdDetailsWithUserName> purchaseOrderWithProductDetails = new List<PurchaseOrderWithProdDetailsWithUserName>();
+            purchaseOrderWithProductDetails =dbContextAccess.PurchaseOrders.Where(purchase => purchase.IsActive).ToList().Select(purchaseOrder => new PurchaseOrderWithProdDetailsWithUserName
             {
-                PurchaseOrders = purchaseOrder,
+                PurchaseOrderWithUsersName = new PurchaseOrderWithUsersName
+                {
+                    Id = purchaseOrder.Id,
+                    CreatedBy = new UserForPO
+                    {
+                        Id = purchaseOrder.CreatedBy,
+                        Name = dbContextAccess.Users.Find(purchaseOrder.CreatedBy).Name
+                    },
+                    TrackingNumber = purchaseOrder.TrackingNumber,
+                    OrderDateTime = purchaseOrder.OrderDateTime,
+                    DueDate = purchaseOrder.DueDate,
+                    ApprovedBy = purchaseOrder.ApprovedBy > 0? new UserForPO
+                    {
+                        Id = purchaseOrder.ApprovedBy,
+                        Name = dbContextAccess.Users.Find(purchaseOrder.ApprovedBy).Name
+                    } : null,
+                    ApprovedDateTime = purchaseOrder.ApprovedDateTime,
+                    BillingAddress = purchaseOrder.BillingAddress,
+                    BillingAddressCity = purchaseOrder.BillingAddressCity,
+                    BillingAddressCountry = purchaseOrder.BillingAddressCountry,
+                    BillingAddressState = purchaseOrder.BillingAddressState,
+                    BillingAddressZipcode = purchaseOrder.BillingAddressZipcode,
+                    ShippingAddress = purchaseOrder.ShippingAddress,
+                    ShippingAddressCity = purchaseOrder.ShippingAddressCity,
+                    ShippingAddressCountry = purchaseOrder.ShippingAddressCountry,
+                    ShippingAddressState = purchaseOrder.ShippingAddressState,
+                    ShippingAddressZipcode = purchaseOrder.ShippingAddressZipcode,
+                    TermsAndConditions = purchaseOrder.TermsAndConditions,
+                    Description = purchaseOrder.Description,
+                    Status = purchaseOrder.Status,
+                    Total = purchaseOrder.Total,
+                    IsActive = purchaseOrder.IsActive,
+                },
                 PurchaseProducts = dbContextAccess.productpurchaseorder.Where(prod => prod.PurchaseOrderId == purchaseOrder.Id && prod.IsActive).ToList().Select(purchase => new PurchaseProductDetails
                 {
                     Quantity = purchase.Quantity,
@@ -75,7 +109,7 @@ namespace Services
         }
 
 
-        public List<PurchaseOrderWithProductDetails> GetAllPendingPurchaseOrders()
+        public async Task<ActionResult<List<PurchaseOrderWithProductDetails>>> GetAllPendingPurchaseOrders()
         {
             List<PurchaseOrderWithProductDetails> purchaseOrderWithProductDetails = new List<PurchaseOrderWithProductDetails>();
             purchaseOrderWithProductDetails = dbContextAccess.PurchaseOrders.Where(purchase => purchase.IsActive && purchase.Status == "Pending").ToList().Select(purchaseOrder => new PurchaseOrderWithProductDetails
@@ -119,21 +153,21 @@ namespace Services
             return dbContextAccess.VendorDetails.FirstOrDefault(vendor => vendor.Id == purchaseProduct.VendorId);
         }
 
-        public PurchaseOrder DeletePurchaseOrder(Guid PurchaseOrderId)
+        public async Task<ActionResult<PurchaseOrder>> DeletePurchaseOrder(Guid PurchaseOrderId)
         {
-            var purchaseOrder = dbContextAccess.PurchaseOrders.FirstOrDefault(p => p.Id == PurchaseOrderId);
+            var purchaseOrder = await dbContextAccess.PurchaseOrders.FirstOrDefaultAsync(p => p.Id == PurchaseOrderId);
             if(purchaseOrder != null)
             {
                 purchaseOrder.IsActive = false;
                 dbContextAccess.PurchaseOrders.Update(purchaseOrder);
-                dbContextAccess.SaveChanges();
+                await dbContextAccess.SaveChangesAsync();
             }
             return purchaseOrder;
         }
 
-        public PurchaseOrder updatePurchaseOrder(Guid id, PurchaseOrderRequest purchaseOrderRequest)
+        public async Task<ActionResult<PurchaseOrder>> updatePurchaseOrder(Guid id, PurchaseOrderRequest purchaseOrderRequest)
         {
-            PurchaseOrder purchaseOrder = dbContextAccess.PurchaseOrders.FirstOrDefault(e => e.Id == id);
+            PurchaseOrder purchaseOrder = await dbContextAccess.PurchaseOrders.FirstOrDefaultAsync(e => e.Id == id);
             if(purchaseOrder != null)
             {
                 purchaseOrder.Id = purchaseOrder.Id;
@@ -183,21 +217,21 @@ namespace Services
                 });
                 purchaseOrder.Total = GetTotalAmount(id);
                 dbContextAccess.PurchaseOrders.Update(purchaseOrder);
-                dbContextAccess.SaveChanges();
+                await dbContextAccess.SaveChangesAsync();
             }
             return purchaseOrder;
         }
         
-        public PurchaseOrder UpdateStatus(Guid id, int approverId)
+        public async Task<ActionResult<PurchaseOrder>> UpdateStatus(Guid id, int approverId)
         {
-            var purchase = dbContextAccess.PurchaseOrders.FirstOrDefault(x => x.Id == id && x.IsActive);
+            var purchase = await dbContextAccess.PurchaseOrders.FirstOrDefaultAsync(x => x.Id == id && x.IsActive);
             if(purchase != null)
             {
                 purchase.Status = "Approved";
                 purchase.ApprovedBy = approverId;
                 purchase.ApprovedDateTime = DateTime.Now.ToString();
                 dbContextAccess.PurchaseOrders.Update(purchase); 
-                dbContextAccess.SaveChanges(); 
+               await dbContextAccess.SaveChangesAsync(); 
             }
             return purchase;
         }
@@ -217,11 +251,11 @@ namespace Services
             return total;
         }
 
-        public decimal GetCurrentYearExpense()
+        public async Task<ActionResult<decimal>> GetCurrentYearExpense()
         {
             decimal total = 0;
             var currentYear = DateTime.Now.Year;
-            var purchaseOrders = dbContextAccess.PurchaseOrders.ToList();
+            var purchaseOrders =await dbContextAccess.PurchaseOrders.ToListAsync();
             purchaseOrders.ForEach(x =>
             {
                 if (x.Status == "Approved" && x.IsActive && DateTime.Parse(x.ApprovedDateTime).Year == currentYear)
@@ -232,10 +266,10 @@ namespace Services
             return total;
         }
 
-        public List<decimal> GetListOfExpensesForMonth()
+        public async Task<ActionResult<List<decimal>>> GetListOfExpensesForMonth()
         {
             List<decimal> list = new List<decimal>();
-            var purchaseOrders = dbContextAccess.PurchaseOrders.ToList();
+            var purchaseOrders =await dbContextAccess.PurchaseOrders.ToListAsync();
             for (int i = 1; i <= 12;i++)
             {
                 decimal total = 0; 
@@ -251,7 +285,7 @@ namespace Services
             return list;
         }
 
-        public GetVendorsWithExpense GetAllExpensesByVendor()
+        public async Task<ActionResult<GetVendorsWithExpense>> GetAllExpensesByVendor()
         {
             List<string> vendors = new List<string>();
             List<Guid> vendorsIds = new List<Guid>();
@@ -292,9 +326,9 @@ namespace Services
             };
         }
 
-        public int GetCountOfAllPendingPurchaseOrders()
+        public async Task<ActionResult<int>> GetCountOfAllPendingPurchaseOrders()
         {
-            return dbContextAccess.PurchaseOrders.Where(x => x.IsActive && x.Status == "Pending").Count();
+            return await dbContextAccess.PurchaseOrders.Where(x => x.IsActive && x.Status == "Pending").CountAsync();
         }
     }
 }

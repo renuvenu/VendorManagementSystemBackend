@@ -26,14 +26,16 @@ namespace VendorManagement_WebApi.Controllers
         {
             if(purchaseOrderRequest != null && purchaseOrderRequest.ProductsPurchased.Count() > 0)
             {
-                return Ok( purchaseOrderService.InsertPurchaseOrder(purchaseOrderRequest));
+                var purchaseOrder = await purchaseOrderService.InsertPurchaseOrder(purchaseOrderRequest);
+                return Ok(purchaseOrder.Value);
             } else { return BadRequest("Invalid Purchase Order requested"); }
         }
 
         [HttpGet]
         public async Task<IActionResult> GetPurchasedOrders()
         {
-            return Ok(purchaseOrderService.GetPurchasedOrders());
+            var purchaseOrders = await purchaseOrderService.GetPurchasedOrders();
+            return Ok(purchaseOrders.Value);
 
         }
 
@@ -41,10 +43,10 @@ namespace VendorManagement_WebApi.Controllers
         [Route("{id:guid}")]
         public async Task<IActionResult> DeletePurchaseOrder([FromRoute] Guid id)
         {
-            var purchaseOrder = purchaseOrderService.DeletePurchaseOrder(id);
-            if (purchaseOrder != null)
+            var purchaseOrder =await purchaseOrderService.DeletePurchaseOrder(id);
+            if (purchaseOrder.Value != null && purchaseOrder.Value.Id == id)
             {
-                return Ok(purchaseOrder);
+                return Ok(purchaseOrder.Value);
             }
             return NotFound("Purchase order not found");
         }
@@ -55,7 +57,8 @@ namespace VendorManagement_WebApi.Controllers
         {
             if(purchaseOrderRequest != null && purchaseOrderRequest.ProductsPurchased.Count() > 0)
             {
-                return Ok(purchaseOrderService.updatePurchaseOrder(id,purchaseOrderRequest));
+                var purchaseOrder = await purchaseOrderService.updatePurchaseOrder(id, purchaseOrderRequest);
+                return Ok(purchaseOrder.Value);
             }
             return BadRequest("Invalid purchase order");
         }
@@ -64,10 +67,10 @@ namespace VendorManagement_WebApi.Controllers
         [Route("/status/{id:guid}/{approverId:int}")]
         public async Task<IActionResult> UpdateStatus([FromRoute] Guid id, [FromRoute] int approverId)
         {
-            var purchaseOrder = purchaseOrderService.UpdateStatus(id, approverId);
-            if (purchaseOrder != null)
+            var purchaseOrder = await purchaseOrderService.UpdateStatus(id, approverId);
+            if (purchaseOrder.Value != null && purchaseOrder.Value.Id == id)
             {
-                return Ok(purchaseOrder);
+                return Ok(purchaseOrder.Value);
             }
             return NotFound("Purchase order not found");
         }
@@ -83,35 +86,40 @@ namespace VendorManagement_WebApi.Controllers
         [Route("get/currentYear/expense")]
         public async Task<IActionResult> GetCurrentYearExpense()
         {
-            return Ok(purchaseOrderService.GetCurrentYearExpense());
+            var count = await purchaseOrderService.GetCurrentYearExpense();
+            return Ok(count.Value);
         }
 
         [HttpGet]
         [Route("get/currentYear/list-expenses")]
         public async Task<IActionResult> GetListOfExpensesForMonth()
         {
-            return Ok(purchaseOrderService.GetListOfExpensesForMonth());
+            var list = await purchaseOrderService.GetListOfExpensesForMonth();
+            return Ok(list.Value);
         }
 
         [HttpGet]
         [Route("get/all-expenses/vendors")]
         public async Task<IActionResult> GetAllExpensesByVendor()
         {
-            return Ok(purchaseOrderService.GetAllExpensesByVendor());
+            var list = await purchaseOrderService.GetAllExpensesByVendor();
+            return Ok(list.Value);
         }
 
         [HttpGet]
         [Route("get/count/pending/purchase-orders")]
         public async Task<IActionResult> GetCountOfAllPendingPurchaseOrders()
         {
-            return Ok(purchaseOrderService.GetCountOfAllPendingPurchaseOrders());
+            var count = await purchaseOrderService.GetCountOfAllPendingPurchaseOrders();
+            return Ok(count.Value);
         }
 
         [HttpGet]
         [Route("get/all/pending/purchase-orders")]
         public async Task<IActionResult> GetAllPendingPurchaseOrders()
         {
-            return Ok(purchaseOrderService.GetAllPendingPurchaseOrders());
+            var pendingPurchases = await purchaseOrderService.GetAllPendingPurchaseOrders();
+            return Ok(pendingPurchases.Value);
         }
 
     }
