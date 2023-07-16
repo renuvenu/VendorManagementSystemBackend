@@ -59,6 +59,26 @@ namespace Services
             return user;
         }
 
+        public async Task<ActionResult<User>> UpdateUser(int id, UserUpdateRequest userUpdateRequest)
+        {
+            User user = new User();
+            if (userUpdateRequest!=null)
+            {
+                user = await dbContextAccess.Users.FirstOrDefaultAsync(x => x.Id == id);
+                if (user != null)
+                {
+                    user.Name = userUpdateRequest.Name;
+                    user.Email = userUpdateRequest.Email;
+                    user.PhoneNumber = userUpdateRequest.PhoneNumber;
+                    user.UpdatedOn = DateTime.Now.ToString();
+                    user.RoleId = dbContextAccess.Roles.FirstOrDefault(x => x.Name == userUpdateRequest.Role).Id;
+                    dbContextAccess.Users.Update(user);
+                    await dbContextAccess.SaveChangesAsync();
+                }
+            }
+            return user;
+        }
+
         public async Task<ActionResult<LoginResponse>> LoginUser(LoginRequest loginRequest)
         {
             if (loginRequest != null)

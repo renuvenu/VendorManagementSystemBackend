@@ -75,9 +75,13 @@ namespace VendorManagement_WebApi.Controllers
 
         [HttpPut]
         [Route("{id:int}")]
-        public async Task<IActionResult> UpdateUser([FromRoute] int id,UserRegisterRequest userRegisterRequest)
+        public async Task<IActionResult> UpdateUser([FromRoute] int id, UserUpdateRequest UserUpdateRequest)
         {
-            return Ok();
+            var user = await userService.UpdateUser(id, UserUpdateRequest);
+            if(user.Value !=null && user.Value.Id > 0) { 
+                return Ok(user.Value); 
+            }
+            return BadRequest("Invalid request");
         }
 
         [HttpPut]
