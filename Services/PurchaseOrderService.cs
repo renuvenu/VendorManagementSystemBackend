@@ -3,6 +3,8 @@ using Model;
 using Model.Requests;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MailKit;
+using Microsoft.Extensions.Options;
 
 namespace Services
 {
@@ -10,12 +12,13 @@ namespace Services
     {
         private readonly DbContextAccess dbContextAccess;
         public ProductPurchaseOrderService productPurchaseOrderService;
-
+        public MailService mailService;
         public PurchaseOrderService() { }
-        public PurchaseOrderService(DbContextAccess dbContextAccess)
+        public PurchaseOrderService(DbContextAccess dbContextAccess, IOptions<MailSettings> mailSettings)
         {
             this.dbContextAccess = dbContextAccess;
             productPurchaseOrderService = new ProductPurchaseOrderService(dbContextAccess);
+            this.mailService = new MailService(mailSettings);
         }
 
         public async Task<ActionResult<PurchaseOrder>> InsertPurchaseOrder(PurchaseOrderRequest purchaseOrderRequest)
@@ -48,6 +51,17 @@ namespace Services
             purchaseOrder.Total = GetTotalAmount(purchaseOrder.Id);
             dbContextAccess.PurchaseOrders.Update(purchaseOrder);
             await dbContextAccess.SaveChangesAsync();
+            User createdByUser = dbContextAccess.Users.Find(purchaseOrder.CreatedBy);
+            var approvers = dbContextAccess.Users.Where(x => x.IsActive && ((x.Role.Name == "Approver" && x.ApprovalStatus == "Approved") || (x.Role.Name == "Admin"))).ToList();
+            approvers.ForEach(user =>
+            {
+                MailRequest mailRequest = new MailRequest();
+                mailRequest.ToEmail = user.Email;
+                mailRequest.Subject = "Regarding purchase order approval request";
+                mailRequest.Body = $"Kindly review and approve the purchase order created by {createdByUser.Name}({createdByUser.Id})";
+                mailService.SendEmailAsync(mailRequest);
+
+            });
 
             return purchaseOrder;
         }
@@ -255,7 +269,14 @@ namespace Services
                 purchase.ApprovedBy = approverId;
                 purchase.ApprovedDateTime = DateTime.Now.ToString();
                 dbContextAccess.PurchaseOrders.Update(purchase); 
-               await dbContextAccess.SaveChangesAsync(); 
+               await dbContextAccess.SaveChangesAsync();
+                User user = dbContextAccess.Users.Find(purchase.CreatedBy);
+                User approver = dbContextAccess.Users.Find(approverId);
+                MailRequest mailRequest = new MailRequest();
+                mailRequest.ToEmail = user.Email;
+                mailRequest.Subject = "Regarding purchase order approval";
+                mailRequest.Body = $"Your purchase order request is approved by {approver.Name})";
+                mailService.SendEmailAsync(mailRequest);
             }
             return purchase;
         }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Model;
 using Model.Requests;
@@ -21,11 +22,13 @@ namespace Services
         private readonly DbContextAccess dbContextAccess;
         private readonly IConfiguration _configuration;
         public PasswordEncryption PasswordEncryption = new PasswordEncryption();
+        
 
         public UserService(DbContextAccess dbContextAccess, IConfiguration configuration)
         {
             this.dbContextAccess = dbContextAccess;
             this._configuration = configuration;
+            
         }
 
         public UserService() {

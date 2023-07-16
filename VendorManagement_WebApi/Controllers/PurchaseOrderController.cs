@@ -7,6 +7,7 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using Services;
+using Microsoft.Extensions.Options;
 
 namespace VendorManagement_WebApi.Controllers
 {
@@ -16,9 +17,9 @@ namespace VendorManagement_WebApi.Controllers
     {
         public PurchaseOrderService purchaseOrderService;
 
-        public PurchaseOrderController(DbContextAccess dbContextAccess)
+        public PurchaseOrderController(DbContextAccess dbContextAccess, IOptions<MailSettings> mailSettings)
         {
-            purchaseOrderService = new PurchaseOrderService(dbContextAccess);
+            purchaseOrderService = new PurchaseOrderService(dbContextAccess,mailSettings);
         }
 
         [HttpPost]
