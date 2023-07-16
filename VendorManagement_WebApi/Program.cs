@@ -1,4 +1,7 @@
+using MailKit;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Model;
 using Repository;
 using Services;
 
@@ -7,10 +10,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddDbContext<DbContextAccess>(options => options.UseSqlServer(
-
-    builder.Configuration.GetConnectionString("ConnString"))
+builder.Configuration.GetConnectionString("ConnString"))
 
 );
+//builder.Services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
+builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
+builder.Services.AddTransient<Services.MailService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

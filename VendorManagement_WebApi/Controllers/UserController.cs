@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Model;
 using Model.Requests;
 using Repository;
@@ -13,7 +14,7 @@ namespace VendorManagement_WebApi.Controllers
     {
         public UserService userService;
 
-        public UserController(DbContextAccess dbContextAccess,IConfiguration configuration) { 
+        public UserController(DbContextAccess dbContextAccess,IConfiguration configuration, IOptions<MailSettings> mailSettings) { 
             userService = new UserService(dbContextAccess,configuration);
         }
 
