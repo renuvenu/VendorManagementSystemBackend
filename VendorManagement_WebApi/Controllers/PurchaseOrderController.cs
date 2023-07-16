@@ -122,5 +122,13 @@ namespace VendorManagement_WebApi.Controllers
             return Ok(pendingPurchases.Value);
         }
 
+        [HttpGet]
+        [Route("get/pending-requests/{id:int}")]
+        public async Task<IActionResult> GetAllPendingRequestsOfaUser([FromRoute] int id)
+        {
+            var pending = await purchaseOrderService.GetAllPendingRequestsOfaUser(id);
+            return Ok(pending.Value);
+        }
+
     }
 }
