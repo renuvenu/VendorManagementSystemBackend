@@ -22,7 +22,8 @@ namespace VendorManagement_WebApi.Controllers
         public async Task<IActionResult> InsertVendorDetails(VendorDetailsRequest vendorDetailsRequest)
         {
             if(vendorDetailsRequest != null && vendorDetailsRequest.ProductDetailsRequest.Count>0) {
-                return Ok(vendorDetailsServices.InsertVendorDetails(vendorDetailsRequest));
+                var vendorDetails = await vendorDetailsServices.InsertVendorDetails(vendorDetailsRequest);
+                return Ok(vendorDetails.Value);
             }
             else
             {
@@ -35,23 +36,25 @@ namespace VendorManagement_WebApi.Controllers
         [Route("/get/count/vendors")]
         public async Task<IActionResult> CountOfVendors()
         {
-            return Ok(vendorDetailsServices.CountOfVendors());
+            var count = await vendorDetailsServices.CountOfVendors();
+            return Ok(count.Value);
         }
 
         [HttpGet]
         public async Task<IActionResult> GetVendorWithProductDetails()
         {
-            return Ok(vendorDetailsServices.GetVendorDetails());
+            var vendors = await vendorDetailsServices.GetVendorDetails();
+            return Ok(vendors.Value);
         }
 
         [HttpGet]
         [Route("{id:guid}")]
         public async Task<IActionResult> GetVendor([FromRoute] Guid id)
         {
-            var vendor = vendorDetailsServices.GetVendor(id);
-            if( vendor!= null)
+            var vendor = await vendorDetailsServices.GetVendor(id);
+            if( vendor.Value!= null)
             {
-                return Ok(vendor);
+                return Ok(vendor.Value);
             }
             return NotFound("Vendor not found");
         }
@@ -61,7 +64,8 @@ namespace VendorManagement_WebApi.Controllers
         [Route("{id:guid}")]
         public async Task<IActionResult> DeleteVendor([FromRoute] Guid id)
         {
-            return Ok(vendorDetailsServices.DeleteVendor(id));
+            var vendor = await vendorDetailsServices.DeleteVendor(id);
+            return Ok(vendor.Value);
         }
 
         [HttpPut]
@@ -70,11 +74,12 @@ namespace VendorManagement_WebApi.Controllers
         {
             if (vendorDetailsUpdateRequest != null && vendorDetailsUpdateRequest.ProductDetailsRequest.Count>0)
             {
-                return Ok(vendorDetailsServices.UpdateVendor(id, vendorDetailsUpdateRequest));
+                var vendorDetails = await vendorDetailsServices.UpdateVendor(id, vendorDetailsUpdateRequest);
+                return Ok(vendorDetails.Value);
             }
             else
             {
-                return BadRequest();
+                return BadRequest("Invalid vendor");
             }
         }
     }

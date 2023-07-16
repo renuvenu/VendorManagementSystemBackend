@@ -17,7 +17,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 //builder.Services.AddDbContext<DbContextAccess>(ServiceLifetime.Transient);
-builder.Services.AddScoped<InterfaceVendorDetailsService, VendorDetailsServices>();
+//builder.Services.AddScoped<InterfaceVendorDetailsService, VendorDetailsServices>();
 
 var app = builder.Build();
 app.UseCors(policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
