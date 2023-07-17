@@ -78,18 +78,18 @@ namespace Services
 
         }
 
-        public static string GetDescription<T>(this T value) where T : Enum
-        {
-            var fieldInfo = value.GetType().GetField(value.ToString());
-            var attributes = fieldInfo.GetCustomAttributes(typeof(System.ComponentModel.DescriptionAttribute), false) as System.ComponentModel.DescriptionAttribute[];
+        //public static string GetDescription<T>(this T value) where T : Enum
+        //{
+        //    var fieldInfo = value.GetType().GetField(value.ToString());
+        //    var attributes = fieldInfo.GetCustomAttributes(typeof(System.ComponentModel.DescriptionAttribute), false) as System.ComponentModel.DescriptionAttribute[];
 
-            if (attributes != null && attributes.Length > 0)
-            {
-                return attributes[0].Description;
-            }
+        //    if (attributes != null && attributes.Length > 0)
+        //    {
+        //        return attributes[0].Description;
+        //    }
 
-            return value.ToString();
-        }
+        //    return value.ToString();
+        //}
 
         public int CountOfVendors()
         {
