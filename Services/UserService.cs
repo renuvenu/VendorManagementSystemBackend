@@ -164,7 +164,9 @@ namespace Services
                 await dbContextAccess.SaveChangesAsync();
             }
             return user;
-        }
+        } 
+
+     
 
         public async Task<ActionResult<List<User>>> GetAllApprovalPendingRequests()
         {
@@ -189,7 +191,24 @@ namespace Services
 
         public async Task<ActionResult<string>> getApprovalStatus(int id)
         {
-            return dbContextAccess.Users.Find(id).ApprovalStatus;
+            var user = dbContextAccess.Users.Find(id);
+            if (user != null && user.ApprovalStatus!=null)
+            {
+                return user.ApprovalStatus;
+            }
+            return null;
+        }
+
+
+        public void DeleteUser_Test(int id)
+        {
+            var vendor = dbContextAccess.Users.FirstOrDefault(p => p.Id == id);
+            if (vendor != null)
+            {
+                dbContextAccess.Users.Remove(vendor);
+
+            }
+
         }
     }
 }

@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 public enum VendorType
 {
-    Service,
-    Product,
-    Service_and_Product
+    Service=0,
+    Product=1,
+    Service_and_Product=2
 }
 namespace Model
 {
