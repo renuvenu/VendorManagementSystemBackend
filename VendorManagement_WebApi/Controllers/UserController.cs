@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Model;
 using Model.Requests;
 using Repository;
@@ -13,28 +14,31 @@ namespace VendorManagement_WebApi.Controllers
     {
         public UserService userService;
 
-        public UserController(DbContextAccess dbContextAccess) { 
-            userService = new UserService(dbContextAccess);
+        public UserController(DbContextAccess dbContextAccess,IConfiguration configuration, IOptions<MailSettings> mailSettings) { 
+            userService = new UserService(dbContextAccess,configuration);
         }
 
         [HttpGet]
         public async Task<IActionResult> getAllUsers()
         {
-            return Ok(userService.GetUsers());
+            var users = await userService.GetUsers();
+            return Ok(users.Value);
         }
 
         [HttpGet]
         [Route("/user-requests/pending")]
         public async Task<IActionResult> GetAllApprovalPendingRequests()
         {
-            return Ok(userService.GetAllApprovalPendingRequests());
+            var pendingRequests = await userService.GetAllApprovalPendingRequests();
+            return Ok(pendingRequests.Value);
         }
 
         [HttpGet]
         [Route("/user-requests/approved")]
         public async Task<IActionResult> GetAllApprovalApprovedRequests()
         {
-            return Ok(userService.GetAllApprovalApprovedRequests());
+            var approvedRequests =await userService.GetAllApprovalApprovedRequests();
+            return Ok(approvedRequests.Value);
         }
 
 
@@ -42,28 +46,29 @@ namespace VendorManagement_WebApi.Controllers
         [Route("/user-requests/declined")]
         public async Task<IActionResult> GetAllApprovalDeclinedRequests()
         {
-            return Ok(userService.GetAllApprovalDeclinedRequests());
+            var declinedRequests = await userService.GetAllApprovalDeclinedRequests();
+            return Ok(declinedRequests.Value);
         }
 
         [HttpPost]
         public async Task<IActionResult> InsertUser(UserRegisterRequest userRegisterRequest)
         {
-            User user = userService.InsertUser(userRegisterRequest);
-            if(user != null && user.Id > 0)
+            var user = await userService.InsertUser(userRegisterRequest);
+            if (user.Value != null && user.Value.Id > 0)
             {
-                return Ok(user);
+                return Ok(user.Value);
             }
-           return BadRequest("Invalid user request");
+            return BadRequest("Invalid user request");
         }
 
         [HttpPost]
         [Route("/login")]
         public async Task<IActionResult> LoginUser([FromBody] LoginRequest loginRequest)
         {
-            User user = userService.LoginUser(loginRequest);
-            if(user != null && user.Id > 0)
+            var user =await userService.LoginUser(loginRequest);
+            if(user.Value.User != null && user.Value.User.Id > 0)
             {
-                return Ok(user);
+                return Ok(user.Value);
             }
             return NotFound("User not found");
         }
@@ -71,20 +76,24 @@ namespace VendorManagement_WebApi.Controllers
 
         [HttpPut]
         [Route("{id:int}")]
-        public async Task<IActionResult> UpdateUser([FromRoute] int id,UserRegisterRequest userRegisterRequest)
+        public async Task<IActionResult> UpdateUser([FromRoute] int id, UserUpdateRequest UserUpdateRequest)
         {
-            return Ok();
+            var user = await userService.UpdateUser(id, UserUpdateRequest);
+            if(user.Value !=null && user.Value.Id > 0) { 
+                return Ok(user.Value); 
+            }
+            return BadRequest("Invalid request");
         }
 
         [HttpPut]
         [Route("/update/{id:int}/{approverId:int}/{status}")]
         public async Task<IActionResult> UpdateApprovalStatus([FromRoute] int id, [FromRoute] int approverId, [FromRoute] string status)
         {
-            var user = userService.UpdateApprovalStatus(id,approverId,status);
+            var user = await userService.UpdateApprovalStatus(id,approverId,status);
 
-            if(user !=null && user.Id > 0)
+            if(user.Value !=null && user.Value.Id > 0)
             {
-                return Ok(user);
+                return Ok(user.Value);
             }
             return NotFound("User not found");
         }
@@ -93,10 +102,10 @@ namespace VendorManagement_WebApi.Controllers
         [Route("{id:int}/{deletedBy:int}")]
         public async Task<IActionResult> DeleteUser([FromRoute] int id, [FromRoute] int deletedBy)
         {
-           var user = userService.DeleteUser(id, deletedBy);
-            if(user != null)
+           var user = await userService.DeleteUser(id, deletedBy);
+            if(user.Value != null && user.Value.Id > 0)
             {
-                return Ok(user);
+                return Ok(user.Value);
             }
             return NotFound("user not found");
         }
@@ -105,7 +114,8 @@ namespace VendorManagement_WebApi.Controllers
         [Route("/get/approvalStatus{id:int}")]
         public async Task<IActionResult> getApprovalStatus([FromRoute] int id)
         {
-            return Ok(userService.getApprovalStatus(id));
+            var status =await userService.getApprovalStatus(id);
+            return Ok(status.Value);
         }
     }
 }

@@ -57,15 +57,5 @@ namespace Services
                 dbContextAccess.SaveChanges();
             }
         }
-
-        public void DeleteTestProductDetail(Guid id)
-        {
-            var productDetail = dbContextAccess.productDetails.FirstOrDefault(x => x.Id == id);
-            if (productDetail != null)
-            {
-                dbContextAccess.productDetails.Remove(productDetail);
-                dbContextAccess.SaveChanges();
-            }
-        }
     }
 }
