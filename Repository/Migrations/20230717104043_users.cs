@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Repository.Migrations
 {
     /// <inheritdoc />
-    public partial class mig1 : Migration
+    public partial class users : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -96,9 +96,6 @@ namespace Repository.Migrations
                     CreatedOn = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UpdatedOn = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    ApprovalStatus = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ApprovedBy = table.Column<int>(type: "int", nullable: true),
-                    ApprovedOn = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DeletedOn = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DeletedBy = table.Column<int>(type: "int", nullable: true),
                     RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)

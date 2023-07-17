@@ -30,12 +30,6 @@ namespace Model
 
         public bool IsActive { get; set; }
 
-        public string? ApprovalStatus { get; set; }
-
-        public int? ApprovedBy { get; set; }
-
-        public string? ApprovedOn { get; set; }
-
         public string? DeletedOn { get; set; }
 
         public int? DeletedBy { get; set; }
