@@ -113,7 +113,7 @@ namespace Services
 
             var token = new JwtSecurityToken(
                     claims: claims,
-                    expires: DateTime.Now.AddMinutes(10),
+                    expires: DateTime.Now.AddHours(1),
                     signingCredentials: creds
                 );
 
