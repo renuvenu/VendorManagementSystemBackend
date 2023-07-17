@@ -116,8 +116,15 @@ namespace Services
         public VendorDetails GetVendorDetails(Guid PurchaseOrderId)
         {
             var purchaseProduct = dbContextAccess.productpurchaseorder.FirstOrDefault(p => p.PurchaseOrderId == PurchaseOrderId);
-            return dbContextAccess.VendorDetails.FirstOrDefault(vendor => vendor.Id == purchaseProduct.VendorId);
-        }
+            if (purchaseProduct != null)
+            {
+                return dbContextAccess.VendorDetails.FirstOrDefault(vendor => vendor.Id == purchaseProduct.VendorId);
+            }
+            else
+            {
+                return null;
+            }
+            }
 
         public PurchaseOrder DeletePurchaseOrder(Guid PurchaseOrderId)
         {

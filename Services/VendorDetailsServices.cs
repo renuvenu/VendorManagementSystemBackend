@@ -2,7 +2,7 @@
 using Model;
 using Model.Requests;
 using Repository;
-
+using System.ComponentModel;
 
 namespace Services
 {
@@ -36,36 +36,59 @@ namespace Services
 
         public VendorDetails InsertVendorDetails(VendorDetailsRequest vendorDetailsRequest)
         {
-            if (vendorDetailsRequest != null && vendorDetailsRequest.ProductDetailsRequest.Count > 0)
+            try
             {
-                ProductDetail productDetail = new ProductDetail();
-                VendorDetails vendorDetails = new VendorDetails();
-                vendorDetails.Id = new Guid();
-                vendorDetails.VendorName = vendorDetailsRequest.VendorName;
-                vendorDetails.IsActive = true;
-                vendorDetails.AddressLine1 = vendorDetailsRequest.AddressLine1;
-                vendorDetails.AddressLine2 = vendorDetailsRequest.AddressLine2;
-                vendorDetails.City = vendorDetailsRequest.City;
-                vendorDetails.State = vendorDetailsRequest.State;
-                vendorDetails.PostalCode = vendorDetailsRequest.PostalCode;
-                vendorDetails.Country = vendorDetailsRequest.Country;
-                vendorDetails.TelePhone1 = vendorDetailsRequest.TelePhone1;
-                vendorDetails.TelePhone2 = vendorDetailsRequest.TelePhone2;
-                vendorDetails.VendorEmail = vendorDetailsRequest.VendorEmail;
-                vendorDetails.VendorWebsite = vendorDetailsRequest.VendorWebsite;
-                dbContextAccess.VendorDetails.Add(vendorDetails);
-                dbContextAccess.SaveChanges();
+                    ProductDetail productDetail = new ProductDetail();
+                    VendorDetails vendorDetails = new VendorDetails();
+                    vendorDetails.Id = new Guid();
+                  //  vendorDetails.VendorName = vendorDetailsRequest.VendorName;
+                    vendorDetails.IsActive = true;
+                    vendorDetails.AddressLine1 = vendorDetailsRequest.AddressLine1;
+                    vendorDetails.AddressLine2 = vendorDetailsRequest.AddressLine2;
+                    vendorDetails.VendorType = vendorDetailsRequest.VendorType;
+                    vendorDetails.City = vendorDetailsRequest.City;
+                    vendorDetails.State = vendorDetailsRequest.State;
+                    vendorDetails.PostalCode = vendorDetailsRequest.PostalCode;
+                    vendorDetails.Country = vendorDetailsRequest.Country;
+                    vendorDetails.TelePhone1 = vendorDetailsRequest.TelePhone1;
+                    vendorDetails.CreatedOn=DateTime.Now.ToString();
+                    vendorDetails.TelePhone2 = vendorDetailsRequest.TelePhone2;
+                    vendorDetails.VendorEmail = vendorDetailsRequest.VendorEmail;
+                    vendorDetails.VendorWebsite = vendorDetailsRequest.VendorWebsite;
+                    dbContextAccess.VendorDetails.Add(vendorDetails);
+                    dbContextAccess.SaveChanges();
 
-                vendorDetailsRequest.ProductDetailsRequest.ForEach(product =>
-                {
-                    product.VendorId = vendorDetails.Id;
-                    productDetailsService.InsertProductDetail(product);
+                    vendorDetailsRequest.ProductDetailsRequest.ForEach(product =>
+                    {
+                        product.VendorId = vendorDetails.Id;
+                        productDetailsService.InsertProductDetail(product);
 
-                });
-                return vendorDetails;
+                    });
+                    return vendorDetails;
+               
+                
             }
-            return null;
+            catch (Exception)
+            {
+                return null;
+            }
 
+
+            
+
+        }
+
+        public static string GetDescription<T>(this T value) where T : Enum
+        {
+            var fieldInfo = value.GetType().GetField(value.ToString());
+            var attributes = fieldInfo.GetCustomAttributes(typeof(System.ComponentModel.DescriptionAttribute), false) as System.ComponentModel.DescriptionAttribute[];
+
+            if (attributes != null && attributes.Length > 0)
+            {
+                return attributes[0].Description;
+            }
+
+            return value.ToString();
         }
 
         public int CountOfVendors()

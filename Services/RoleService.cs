@@ -53,6 +53,16 @@ namespace Services
                 dbContextAccess.SaveChanges();
             }
             return role;
+        } 
+
+        public void DeleteRole_Test(Guid id)
+        {
+            var role = dbContextAccess.Roles.Find(id);
+            if (role != null)
+            {
+                dbContextAccess.Roles.Remove(role);
+                dbContextAccess.SaveChanges();
+            }
         }
     }
 }
