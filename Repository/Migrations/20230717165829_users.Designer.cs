@@ -12,7 +12,7 @@ using Repository;
 namespace Repository.Migrations
 {
     [DbContext(typeof(DbContextAccess))]
-    [Migration("20230717104043_users")]
+    [Migration("20230717165829_users")]
     partial class users
     {
         /// <inheritdoc />
@@ -314,8 +314,9 @@ namespace Repository.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("VendorType")
-                        .HasColumnType("int");
+                    b.Property<string>("VendorType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("VendorWebsite")
                         .HasColumnType("nvarchar(max)");

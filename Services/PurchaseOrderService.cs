@@ -275,6 +275,7 @@ namespace Services
                 purchase.Status = "Approved";
                 purchase.ApprovedBy = approverId;
                 purchase.ApprovedDateTime = DateTime.Now.ToString();
+                purchase.TrackingNumber = Guid.NewGuid().ToString();
                 dbContextAccess.PurchaseOrders.Update(purchase); 
                await dbContextAccess.SaveChangesAsync();
                 User user = dbContextAccess.Users.Find(purchase.CreatedBy);
