@@ -1,4 +1,5 @@
 ﻿using BCrypt.Net;
+using MailKit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -22,13 +23,14 @@ namespace Services
         private readonly DbContextAccess dbContextAccess;
         private readonly IConfiguration _configuration;
         public PasswordEncryption PasswordEncryption = new PasswordEncryption();
-        
+        public MailService mailService;
 
-        public UserService(DbContextAccess dbContextAccess, IConfiguration configuration)
+
+        public UserService(DbContextAccess dbContextAccess, IConfiguration configuration, IOptions<MailSettings> mailSettings)
         {
             this.dbContextAccess = dbContextAccess;
             this._configuration = configuration;
-            
+            this.mailService = new MailService(mailSettings);
         }
 
         public UserService() {
@@ -111,7 +113,7 @@ namespace Services
 
             var token = new JwtSecurityToken(
                     claims: claims,
-                    expires: DateTime.Now.AddMinutes(10),
+                    expires: DateTime.Now.AddHours(1),
                     signingCredentials: creds
                 );
 
@@ -136,6 +138,11 @@ namespace Services
                 user.Role = dbContextAccess.Roles.Find(user.RoleId);
                 dbContextAccess.Users.Update(user);
                 await dbContextAccess.SaveChangesAsync();
+                MailRequest mailRequest = new MailRequest();
+                mailRequest.ToEmail = user.Email;
+                mailRequest.Subject = "Regarding role updated by admin";
+                mailRequest.Body = $"Your role is update to {user.Role.Name} by admin";
+                mailService.SendEmailAsync(mailRequest);
             }
             return user;
         }
