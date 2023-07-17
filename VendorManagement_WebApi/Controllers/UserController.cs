@@ -15,7 +15,7 @@ namespace VendorManagement_WebApi.Controllers
         public UserService userService;
 
         public UserController(DbContextAccess dbContextAccess,IConfiguration configuration, IOptions<MailSettings> mailSettings) { 
-            userService = new UserService(dbContextAccess,configuration);
+            userService = new UserService(dbContextAccess,configuration, mailSettings);
         }
 
         [HttpGet]
