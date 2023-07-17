@@ -52,7 +52,7 @@ namespace Services
             dbContextAccess.PurchaseOrders.Update(purchaseOrder);
             await dbContextAccess.SaveChangesAsync();
             User createdByUser = dbContextAccess.Users.Find(purchaseOrder.CreatedBy);
-            var approvers = dbContextAccess.Users.Where(x => x.IsActive && ((x.Role.Name == "Approver" && x.ApprovalStatus == "Approved") || (x.Role.Name == "Admin"))).ToList();
+            var approvers = dbContextAccess.Users.Where(x => x.IsActive && (x.Role.Name == "Approver" || x.Role.Name == "Admin")).ToList();
             approvers.ForEach(user =>
             {
                 MailRequest mailRequest = new MailRequest();

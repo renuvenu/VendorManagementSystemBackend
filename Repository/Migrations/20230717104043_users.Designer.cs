@@ -12,8 +12,8 @@ using Repository;
 namespace Repository.Migrations
 {
     [DbContext(typeof(DbContextAccess))]
-    [Migration("20230715052737_mig1")]
-    partial class mig1
+    [Migration("20230717104043_users")]
+    partial class users
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -216,15 +216,6 @@ namespace Repository.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ApprovalStatus")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("ApprovedBy")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ApprovedOn")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CreatedOn")
                         .HasColumnType("nvarchar(max)");

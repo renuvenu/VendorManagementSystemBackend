@@ -25,30 +25,30 @@ namespace VendorManagement_WebApi.Controllers
             return Ok(users.Value);
         }
 
-        [HttpGet]
-        [Route("/user-requests/pending")]
-        public async Task<IActionResult> GetAllApprovalPendingRequests()
-        {
-            var pendingRequests = await userService.GetAllApprovalPendingRequests();
-            return Ok(pendingRequests.Value);
-        }
+        //[HttpGet]
+        //[Route("/user-requests/pending")]
+        //public async Task<IActionResult> GetAllApprovalPendingRequests()
+        //{
+        //    var pendingRequests = await userService.GetAllApprovalPendingRequests();
+        //    return Ok(pendingRequests.Value);
+        //}
 
-        [HttpGet]
-        [Route("/user-requests/approved")]
-        public async Task<IActionResult> GetAllApprovalApprovedRequests()
-        {
-            var approvedRequests =await userService.GetAllApprovalApprovedRequests();
-            return Ok(approvedRequests.Value);
-        }
+        //[HttpGet]
+        //[Route("/user-requests/approved")]
+        //public async Task<IActionResult> GetAllApprovalApprovedRequests()
+        //{
+        //    var approvedRequests =await userService.GetAllApprovalApprovedRequests();
+        //    return Ok(approvedRequests.Value);
+        //}
 
 
-        [HttpGet]
-        [Route("/user-requests/declined")]
-        public async Task<IActionResult> GetAllApprovalDeclinedRequests()
-        {
-            var declinedRequests = await userService.GetAllApprovalDeclinedRequests();
-            return Ok(declinedRequests.Value);
-        }
+        //[HttpGet]
+        //[Route("/user-requests/declined")]
+        //public async Task<IActionResult> GetAllApprovalDeclinedRequests()
+        //{
+        //    var declinedRequests = await userService.GetAllApprovalDeclinedRequests();
+        //    return Ok(declinedRequests.Value);
+        //}
 
         [HttpPost]
         public async Task<IActionResult> InsertUser(UserRegisterRequest userRegisterRequest)
@@ -65,8 +65,8 @@ namespace VendorManagement_WebApi.Controllers
         [Route("/login")]
         public async Task<IActionResult> LoginUser([FromBody] LoginRequest loginRequest)
         {
-            var user =await userService.LoginUser(loginRequest);
-            if(user.Value.User != null && user.Value.User.Id > 0)
+            var user = await userService.LoginUser(loginRequest);
+            if(user!= null && user.Value.User.Id > 0)
             {
                 return Ok(user.Value);
             }
@@ -86,10 +86,10 @@ namespace VendorManagement_WebApi.Controllers
         }
 
         [HttpPut]
-        [Route("/update/{id:int}/{approverId:int}/{status}")]
-        public async Task<IActionResult> UpdateApprovalStatus([FromRoute] int id, [FromRoute] int approverId, [FromRoute] string status)
+        [Route("/update/{id:int}/{role}")]
+        public async Task<IActionResult> UpdateUserRole([FromRoute] int id,[FromRoute] string role)
         {
-            var user = await userService.UpdateApprovalStatus(id,approverId,status);
+            var user = await userService.UpdateUserRole(id,role);
 
             if(user.Value !=null && user.Value.Id > 0)
             {
@@ -108,14 +108,6 @@ namespace VendorManagement_WebApi.Controllers
                 return Ok(user.Value);
             }
             return NotFound("user not found");
-        }
-
-        [HttpGet]
-        [Route("/get/approvalStatus{id:int}")]
-        public async Task<IActionResult> getApprovalStatus([FromRoute] int id)
-        {
-            var status =await userService.getApprovalStatus(id);
-            return Ok(status.Value);
         }
     }
 }
