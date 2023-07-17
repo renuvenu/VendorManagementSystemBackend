@@ -18,7 +18,7 @@ namespace UnitTest_VendorDetailsServices
         {
             dbContextAccess = new DbContextAccess(new DbContextOptions<DbContextAccess>());
             productDetailsService = new ProductDetailsService(dbContextAccess);
-            purchaseOrderService= new PurchaseOrderService(dbContextAccess);
+           // purchaseOrderService= new PurchaseOrderService(dbContextAccess);
             productPurchaseOrderService= new ProductPurchaseOrderService(dbContextAccess);
         }
 
