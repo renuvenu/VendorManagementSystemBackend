@@ -37,12 +37,11 @@ namespace Services
 
         public async Task<ActionResult<VendorDetails>> InsertVendorDetails(VendorDetailsRequest vendorDetailsRequest)
         {
-            try
-            {
+            
                     ProductDetail productDetail = new ProductDetail();
                     VendorDetails vendorDetails = new VendorDetails();
                     vendorDetails.Id = new Guid();
-                  //  vendorDetails.VendorName = vendorDetailsRequest.VendorName;
+                  vendorDetails.VendorName = vendorDetailsRequest.VendorName;
                     vendorDetails.IsActive = true;
                     vendorDetails.AddressLine1 = vendorDetailsRequest.AddressLine1;
                     vendorDetails.AddressLine2 = vendorDetailsRequest.AddressLine2;
@@ -58,24 +57,7 @@ namespace Services
                     vendorDetails.VendorWebsite = vendorDetailsRequest.VendorWebsite;
                     dbContextAccess.VendorDetails.Add(vendorDetails);
                     dbContextAccess.SaveChanges();
-            ProductDetail productDetail = new ProductDetail();
-            VendorDetails vendorDetails = new VendorDetails();
-            vendorDetails.Id = new Guid();
-            vendorDetails.VendorName = vendorDetailsRequest.VendorName;
-            vendorDetails.IsActive = true;
-            vendorDetails.AddressLine1 = vendorDetailsRequest.AddressLine1;
-            vendorDetails.AddressLine2 = vendorDetailsRequest.AddressLine2;
-            vendorDetails.City = vendorDetailsRequest.City;
-            vendorDetails.State = vendorDetailsRequest.State;
-            vendorDetails.PostalCode = vendorDetailsRequest.PostalCode;
-            vendorDetails.Country = vendorDetailsRequest.Country;
-            vendorDetails.TelePhone1 = vendorDetailsRequest.TelePhone1;
-            vendorDetails.TelePhone2 = vendorDetailsRequest.TelePhone2;
-            vendorDetails.VendorEmail = vendorDetailsRequest.VendorEmail;
-            vendorDetails.VendorWebsite = vendorDetailsRequest.VendorWebsite;
-            vendorDetails.CreatedOn = DateTime.Now.ToString();
-            await dbContextAccess.VendorDetails.AddAsync(vendorDetails);
-            await dbContextAccess.SaveChangesAsync();
+           
 
             vendorDetailsRequest.ProductDetailsRequest.ForEach(product =>
             {
