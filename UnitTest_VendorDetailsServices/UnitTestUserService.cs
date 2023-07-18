@@ -35,30 +35,32 @@ namespace UnitTest_VendorDetailsServices
                 PhoneNumber="987654321",
                 Password="test@123",
             };
-            var result=await userService.InsertUser(userRegisterRequest);
+            var result= await userService.InsertUser(userRegisterRequest);
             Assert.NotNull(result);
-          // userService.DeleteUser_Test(result.Id);
+            userService.DeleteUser_Test(result.Value.Id);
         }
 
         [Fact]
-        public void UserLogin()
+        public async void UserLogin()
         {
+            var userRegisterRequest = new UserRegisterRequest
+            {
+                Name = "TestName3",
+                Email = "testname0@gmail.com",
+                PhoneNumber = "987654321",
+                Password = "test@123",
+            };
+             userService.InsertUser(userRegisterRequest);
             var loginRequest = new LoginRequest
             {
-                Email="testname@gmail.com",
-                Password="test@123"
+                Email = "testname0@gmail.com",
+                Password = "test@123"
             };
-            var result=userService.LoginUser(loginRequest);
-            Assert.NotNull(result);
-            //Assert.Equal(loginRequest.Email, result.Email);
+            var loginresult = await userService.LoginUser(loginRequest);
+            Assert.NotNull(loginresult);
+            
         }
-       // [Fact]
-        //public void GetUserStatus()
-        //{
-        //    var id = 1003;
-        //    var result = userService.getApprovalStatus(id);
-        //    Assert.Equal("Approved", result);
-        //}
+        
 
         [Fact]
         public void DeleteUser()
@@ -66,94 +68,65 @@ namespace UnitTest_VendorDetailsServices
 
             var userRegisterRequest = new UserRegisterRequest
             {
-                Name = "TestName2",
-                Email = "testname2@gmail.com",
+                Name = "TestName5",
+                Email = "testname5@gmail.com",
                 PhoneNumber = "987654321",
                 Password = "test@123",
             };
             var UserResult =  userService.InsertUser(userRegisterRequest);
             var userRegisterRequest1 = new UserRegisterRequest
             {
-                Name = "TestName2",
-                Email = "testname2@gmail.com",
+                Name = "TestName6",
+                Email = "testname6@gmail.com",
                 PhoneNumber = "987654321",
                 Password = "test@123",
             };
             var DeletedbyUserresult = userService.InsertUser(userRegisterRequest1);
-            var UserId =UserResult.Id;
-            var DeletedBy=DeletedbyUserresult.Id;
+            var UserId =UserResult.Result.Value.Id;
+            var DeletedBy=DeletedbyUserresult.Result.Value.Id;
             
             var result = userService.DeleteUser(UserId, DeletedBy);
-            Assert.NotNull(result);
+            //Assert.NotNull(result);
             Assert.Equal(UserId,result.Id);
            // userService.DeleteUser_Test(UserResult.Id);
            // userService.DeleteUser_Test(DeletedbyUserresult.Id);
 
         }
 
-        //[Fact]
-        //public void GetAllPendingStatusOfUser()
-        //{
-        //    var result = userService.GetAllApprovalPendingRequests();
 
-        //    Assert.NotEmpty(result);
-
-        //}
-
-        //[Fact]
-        //public void GetAllApprovedStatusOfUser()
-        //{
-        //    var result=userService.GetAllApprovalApprovedRequests();
-        //    Assert.NotEmpty(result);
-        //}
-        //[Fact]
-        //public void GetAllDeclinedStatusofUser()
-        //{
-        //    var result= userService.GetAllApprovalDeclinedRequests();
-        //    Assert.NotEmpty(result);
-        //}
 
         ////Negative Tests
 
-        //[Fact]
-        //public void GetUserStatus_InvalidId()
-        //{
-        //    var id = 108;
-        //    string result = userService.getApprovalStatus(id);
-        //    Assert.Null(result);
-        //}
 
         [Fact]
-        public void UserLogin_InvalidWEmailPassword()
+        public async void UserLogin_InvalidWEmailPassword()
         {
             var loginRequest = new LoginRequest
             {
                 Email = "testname@gmail.com",
                 Password = "test123"
             };
-            var result = userService.LoginUser(loginRequest);
+            var result = await userService.LoginUser(loginRequest);
             Assert.Null(result);
            
         }
 
-        //[Fact]
-        //public void InsertUser_InvalidDetails()
-        //{
-        //    var userRegisterRequest = new UserRegisterRequest
-        //    {
-        //        Name = "",
-        //        Email = "",
-        //        PhoneNumber = "987654321",
-        //        Password = "test@123",
-        //        Role = "User"
-        //    };
-        //    var result = userService.InsertUser(userRegisterRequest);
-        //    Assert.NotNull(result);
-        //    Assert.Null(result.Name);
-        //    Assert.Null(result.Email);
-        //    Assert.Null(result.ApprovalStatus);
-        //    Assert.Null(result.ApprovedBy);
-        //}
+        [Fact]
+        public async void InsertUser_InvalidDetails()
+        {
+            var userRegisterRequest = new UserRegisterRequest
+            {
+                Name = "",
+                Email = "",
+                PhoneNumber = "",
+                Password = "",
+                
+            };
+            var result = await userService.InsertUser(userRegisterRequest);
+            Assert.Null(result);
+            
+            
+        }
     }
 
 }

@@ -43,21 +43,26 @@ namespace Services
 
         public async Task<ActionResult<User>> InsertUser(UserRegisterRequest userRegisterRequest)
         {
-            User user = new User();
-            if (userRegisterRequest != null && dbContextAccess.Users.Where(x => x.Email == userRegisterRequest.Email).ToList().Count() == 0)
-            {
-                user.Name = userRegisterRequest.Name;
-                user.Email = userRegisterRequest.Email;
-                user.PhoneNumber = userRegisterRequest.PhoneNumber;
-                user.CreatedOn = DateTime.Now.ToString();
-                user.IsActive = true;
-                user.Password = BCrypt.Net.BCrypt.HashPassword(userRegisterRequest.Password);
-                user.RoleId = dbContextAccess.Roles.FirstOrDefault(x => x.Name == "Readonly").Id;
-                await dbContextAccess.Users.AddAsync(user);
-                await dbContextAccess.SaveChangesAsync();
-                
-            }
-            return user;
+            
+                User user = new User();
+                if (userRegisterRequest != null && dbContextAccess.Users.Where(x => x.Email == userRegisterRequest.Email).ToList().Count() == 0)
+                {
+                    user.Name = userRegisterRequest.Name;
+                    user.Email = userRegisterRequest.Email;
+                    user.PhoneNumber = userRegisterRequest.PhoneNumber;
+                    user.CreatedOn = DateTime.Now.ToString();
+                    user.IsActive = true;
+                    user.Password = BCrypt.Net.BCrypt.HashPassword(userRegisterRequest.Password);
+                    user.RoleId = dbContextAccess.Roles.FirstOrDefault(x => x.Name == "Readonly").Id;
+                    await dbContextAccess.Users.AddAsync(user);
+                    await dbContextAccess.SaveChangesAsync();
+                    return user;
+
+                }
+                return null;
+            
+            
+            
         }
 
         public async Task<ActionResult<User>> UpdateUser(int id, UserUpdateRequest userUpdateRequest)
