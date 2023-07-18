@@ -21,8 +21,5 @@ namespace Model.Requests
 
         [Required]
         public string PhoneNumber { get; set; }
-
-        [Required]
-        public string Role { get; set;}
     }
 }
