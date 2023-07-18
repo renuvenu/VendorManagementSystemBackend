@@ -65,10 +65,10 @@ namespace VendorManagement_WebApi.Controllers
         }
 
         [HttpPut]
-        [Route("/status/{id:guid}/{approverId:int}")]
-        public async Task<IActionResult> UpdateStatus([FromRoute] Guid id, [FromRoute] int approverId)
+        [Route("/status/{id:guid}/{approverId:int}/{status}")]
+        public async Task<IActionResult> UpdateStatus([FromRoute] Guid id, [FromRoute] int approverId, [FromRoute] string status)
         {
-            var purchaseOrder = await purchaseOrderService.UpdateStatus(id, approverId);
+            var purchaseOrder = await purchaseOrderService.UpdateStatus(id, approverId,status);
             if (purchaseOrder.Value != null && purchaseOrder.Value.Id == id)
             {
                 return Ok(purchaseOrder.Value);

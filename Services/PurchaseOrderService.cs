@@ -267,12 +267,12 @@ namespace Services
             return purchaseOrder;
         }
         
-        public async Task<ActionResult<PurchaseOrder>> UpdateStatus(Guid id, int approverId)
+        public async Task<ActionResult<PurchaseOrder>> UpdateStatus(Guid id, int approverId,string status)
         {
             var purchase = await dbContextAccess.PurchaseOrders.FirstOrDefaultAsync(x => x.Id == id && x.IsActive);
             if(purchase != null)
             {
-                purchase.Status = "Approved";
+                purchase.Status = status;
                 purchase.ApprovedBy = approverId;
                 purchase.ApprovedDateTime = DateTime.Now.ToString();
                 purchase.TrackingNumber = Guid.NewGuid().ToString();
