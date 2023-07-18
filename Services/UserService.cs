@@ -33,16 +33,19 @@ namespace Services
             this.mailService = new MailService(mailSettings);
         }
 
-        public UserService() {
-            
+        public UserService(DbContextAccess dbContextAccess)
+        {
+            this.dbContextAccess= dbContextAccess;
         }
+       
+
+        
 
         public async Task<ActionResult<User>> InsertUser(UserRegisterRequest userRegisterRequest)
         {
             User user = new User();
             if (userRegisterRequest != null && dbContextAccess.Users.Where(x => x.Email == userRegisterRequest.Email).ToList().Count() == 0)
             {
-                
                 user.Name = userRegisterRequest.Name;
                 user.Email = userRegisterRequest.Email;
                 user.PhoneNumber = userRegisterRequest.PhoneNumber;

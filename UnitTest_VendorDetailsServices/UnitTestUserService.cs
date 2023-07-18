@@ -22,11 +22,11 @@ namespace UnitTest_VendorDetailsServices
         {
             dbContextAccess = new DbContextAccess(new DbContextOptions<DbContextAccess>());
             productDetailsService = new ProductDetailsService(dbContextAccess);
-            //userService = new UserService(dbContextAccess);
+            userService = new UserService(dbContextAccess);
         }
 
         [Fact]
-        public void InsertUser()
+        public async void InsertUser()
         {
             var userRegisterRequest = new UserRegisterRequest
             {
@@ -34,11 +34,10 @@ namespace UnitTest_VendorDetailsServices
                 Email="testname2@gmail.com",
                 PhoneNumber="987654321",
                 Password="test@123",
-                //Role="User"
             };
-            var result=userService.InsertUser(userRegisterRequest);
+            var result=await userService.InsertUser(userRegisterRequest);
             Assert.NotNull(result);
-           userService.DeleteUser_Test(result.Id);
+          // userService.DeleteUser_Test(result.Id);
         }
 
         [Fact]
@@ -53,24 +52,44 @@ namespace UnitTest_VendorDetailsServices
             Assert.NotNull(result);
             //Assert.Equal(loginRequest.Email, result.Email);
         }
-        //[Fact]
+       // [Fact]
         //public void GetUserStatus()
         //{
         //    var id = 1003;
-        //    var result=userService.getApprovalStatus(id);
+        //    var result = userService.getApprovalStatus(id);
         //    Assert.Equal("Approved", result);
         //}
 
-        //[Fact]
-        //public void DeleteUser()
-        //{
-        //    var UserId = 1005;
-        //    var DeletedBy = 1;
-        //    var result=userService.DeleteUser(UserId, DeletedBy);
-        //    Assert.NotNull(result);
-        //    Assert.Equal(DeletedBy, result.DeletedBy);
+        [Fact]
+        public void DeleteUser()
+        {
+
+            var userRegisterRequest = new UserRegisterRequest
+            {
+                Name = "TestName2",
+                Email = "testname2@gmail.com",
+                PhoneNumber = "987654321",
+                Password = "test@123",
+            };
+            var UserResult =  userService.InsertUser(userRegisterRequest);
+            var userRegisterRequest1 = new UserRegisterRequest
+            {
+                Name = "TestName2",
+                Email = "testname2@gmail.com",
+                PhoneNumber = "987654321",
+                Password = "test@123",
+            };
+            var DeletedbyUserresult = userService.InsertUser(userRegisterRequest1);
+            var UserId =UserResult.Id;
+            var DeletedBy=DeletedbyUserresult.Id;
             
-        //}
+            var result = userService.DeleteUser(UserId, DeletedBy);
+            Assert.NotNull(result);
+            Assert.Equal(UserId,result.Id);
+           // userService.DeleteUser_Test(UserResult.Id);
+           // userService.DeleteUser_Test(DeletedbyUserresult.Id);
+
+        }
 
         //[Fact]
         //public void GetAllPendingStatusOfUser()
@@ -129,7 +148,7 @@ namespace UnitTest_VendorDetailsServices
         //        Role = "User"
         //    };
         //    var result = userService.InsertUser(userRegisterRequest);
-        //    Assert.NotNull (result);
+        //    Assert.NotNull(result);
         //    Assert.Null(result.Name);
         //    Assert.Null(result.Email);
         //    Assert.Null(result.ApprovalStatus);
