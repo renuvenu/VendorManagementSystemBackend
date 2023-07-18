@@ -71,7 +71,6 @@ namespace Services
                     user.Name = userUpdateRequest.Name;
                     user.Email = userUpdateRequest.Email;
                     user.PhoneNumber = userUpdateRequest.PhoneNumber;
-                    user.Password = BCrypt.Net.BCrypt.HashPassword(userUpdateRequest.Password);
                     user.UpdatedOn = DateTime.Now.ToString();
                     dbContextAccess.Users.Update(user);
                     await dbContextAccess.SaveChangesAsync();

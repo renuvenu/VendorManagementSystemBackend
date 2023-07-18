@@ -12,13 +12,8 @@ using Repository;
 namespace Repository.Migrations
 {
     [DbContext(typeof(DbContextAccess))]
-<<<<<<<< HEAD:Repository/Migrations/20230717133201_mig1.Designer.cs
-    [Migration("20230717133201_mig1")]
-    partial class mig1
-========
-    [Migration("20230717165829_users")]
-    partial class users
->>>>>>>> 818929b10c22d6b58f66fcc0e46d9cd478b9e456:Repository/Migrations/20230717165829_users.Designer.cs
+    [Migration("20230718042924_firt-Migartion")]
+    partial class firtMigartion
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
