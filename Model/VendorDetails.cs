@@ -24,7 +24,7 @@ namespace Model
         [Required]
         public bool IsActive { get; set; }
         [Required]
-        public VendorType VendorType { get; set; }
+        public string VendorType { get; set; }
         [Required]
         public string? AddressLine1 { get; set; }
         public string? AddressLine2 { get; set; }

@@ -11,6 +11,6 @@ namespace Model
     {
         public Guid Id { get; set; }
         public string? VendorName { get; set; }
-        public VendorType VendorType { get; set; }
+        public string VendorType { get; set; }
     }
 }
