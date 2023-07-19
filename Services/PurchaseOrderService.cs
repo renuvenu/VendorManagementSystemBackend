@@ -112,11 +112,11 @@ namespace Services
                     Price = dbContextAccess.productDetails.Find(purchase.ProductId).Price,
                     ProductDescription = dbContextAccess.productDetails.Find(purchase.ProductId).ProductDescription,
                     ProductName = dbContextAccess.productDetails.Find(purchase.ProductId).ProductName,
-                    ProductId = purchase.Id
+                    ProductId = (Guid)purchase.ProductId
                 }).ToList(),
                 VendorForPurchaseOrder = dbContextAccess.productpurchaseorder.Where(e => e.PurchaseOrderId == purchaseOrder.Id).ToList().Select(purchase => new VendorForPurchaseOrder
                 {
-                    Id = purchase.Id,
+                    Id = (Guid) purchase.VendorId,
                     VendorName = dbContextAccess.VendorDetails.Find(purchase.VendorId).VendorName,
                     VendorType = dbContextAccess.VendorDetails.Find(purchase.VendorId).VendorType
                 }).ToList().Last(),
@@ -251,6 +251,7 @@ namespace Services
                         purchaseOrderIds.Remove(productPurchase.Id);
                         productPurchase.Quantity = data.Quantity;
                         productPurchase.VendorId  = data.VendorId;
+                        productPurchase.IsActive = true;
                         dbContextAccess.productpurchaseorder.Update(productPurchase);
                         dbContextAccess.SaveChanges();
                     } else
