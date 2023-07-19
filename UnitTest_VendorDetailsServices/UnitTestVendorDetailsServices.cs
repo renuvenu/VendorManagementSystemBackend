@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Model;
@@ -26,7 +27,151 @@ namespace UnitTest_VendorDetailsServices
         }
 
         [Fact]
-        public void InsertVendorDetails_ValidRequest_ReturnsVendorDetails()
+        public async Task InsertVendorDetails_ValidRequest_ReturnsVendorDetails()
+        {
+            
+            var result =  await InsertVendorDetails_Test(); 
+
+            // Assert
+            Assert.NotEqual(default, result.Value.Id);
+            Assert.Equal(result.Value.VendorName, result.Value.VendorName);
+            Assert.True(result.Value.IsActive);
+            await vendorDetailsServices.DeleteVendor_Test(result.Value.Id);
+
+
+        }
+
+        [Fact]
+        public async Task GetVendorDetailandProductById_ReturnsCorrectData()
+        {
+            var insertVendor = await InsertVendorDetails_Test();
+            var result = await vendorDetailsServices.GetVendor(insertVendor.Value.Id);
+            Assert.NotNull(result.Value.VendorDetails);
+            Assert.NotNull(result.Value.ProductDetails);
+
+            Assert.Equal(insertVendor.Value.Id,result.Value.VendorDetails.Id);
+            await vendorDetailsServices.DeleteVendor_Test(insertVendor.Value.Id);
+
+        }
+
+
+       
+        [Fact]
+        public async Task GetVendorDetails_ReturnsCorrectData()
+        {
+                    
+                 var insertVendor = await InsertVendorDetails_Test();
+                 var result = await vendorDetailsServices.GetVendorDetails();
+                 Assert.NotNull(result);
+                 Assert.NotEmpty(result.Value);
+                 await vendorDetailsServices.DeleteVendor_Test(insertVendor.Value.Id);
+
+           
+        } 
+
+        [Fact]
+        public async Task DeleteVendor_ReturnsDeletedVendor()
+        {
+
+
+                var insertVendor = await InsertVendorDetails_Test();
+           
+                var deletedVendor =await vendorDetailsServices.DeleteVendor(insertVendor.Value.Id);
+                
+                Assert.Equal(insertVendor.Value.Id, deletedVendor.Value.Id);
+                Assert.False(deletedVendor.Value.IsActive);
+            await vendorDetailsServices.DeleteVendor_Test(insertVendor.Value.Id);
+
+        }
+
+        [Fact]
+        public async Task UpdateVendorDetails()
+        {
+            var insertVendor = await InsertVendorDetails_Test();
+            var vendorDetailsWithUpdateRequest = new VendorDetailsUpdateRequest
+            {
+                VendorName = "Test Vendor Update",
+                AddressLine1 = "123 Test Street Update",
+                City = "Test City Update",
+                State = "Test State Update",
+                VendorType = "product Update",
+                PostalCode = "12345",
+                Country = "Test Country Update",
+                TelePhone1 = "1234567890",
+                VendorEmail = "testupdate@example.com",
+                VendorWebsite = "https://www.testvendor.com",
+                ProductDetailsRequest = new List<UpdateProductDetailRequest>
+                {
+                    new UpdateProductDetailRequest
+                    {
+                        Id=Guid.Empty,
+                        Price = 110,
+                        ProductDescription = "abcProduct",
+                        ProductName = "ABC"
+                    }
+                }
+            };
+            var result=await vendorDetailsServices.UpdateVendor(insertVendor.Value.Id, vendorDetailsWithUpdateRequest);
+            Assert.NotNull(result);
+            Assert.Equal(vendorDetailsWithUpdateRequest.VendorName, result.Value.VendorDetails.VendorName);
+
+
+            await vendorDetailsServices.DeleteVendor_Test(insertVendor.Value.Id);
+
+
+        }
+
+        //Negative Test
+        [Fact]
+        public async Task DeleteInvalidVendor()
+        {
+
+            var deletedVendor = await vendorDetailsServices.DeleteVendor(Guid.Empty);
+            Assert.Null(deletedVendor.Value);
+        }
+
+       
+
+        [Fact]
+        public async Task GetVendorDetailandProductById_InvalidId()
+        {
+            var result = await vendorDetailsServices.GetVendor(new Guid("00000000-0000-0000-0000-000000000000"));
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public async Task UpdateVendorDetails_InvalidVendorId()
+        {
+            
+            var vendorDetailsWithUpdateRequest = new VendorDetailsUpdateRequest
+            {
+                VendorName = "Test Vendor Update",
+                AddressLine1 = "123 Test Street Update",
+                City = "Test City Update",
+                State = "Test State Update",
+                VendorType = "product Update",
+                PostalCode = "12345",
+                Country = "Test Country Update",
+                TelePhone1 = "1234567890",
+                VendorEmail = "testupdate@example.com",
+                VendorWebsite = "https://www.testvendor.com",
+                ProductDetailsRequest = new List<UpdateProductDetailRequest>
+                {
+                    new UpdateProductDetailRequest
+                    {
+                        Id=Guid.Empty,
+                        Price = 110,
+                        ProductDescription = "abcProduct",
+                        ProductName = "ABC"
+                    }
+                }
+            };
+            var result = await vendorDetailsServices.UpdateVendor(Guid.Empty, vendorDetailsWithUpdateRequest);
+            Assert.Null(result.Value);
+        }
+
+        // Method to Insert Test Data
+        public async Task<ActionResult<VendorDetails>> InsertVendorDetails_Test()
         {
             var vendorDetailsRequest = new VendorDetailsRequest
             {
@@ -34,6 +179,7 @@ namespace UnitTest_VendorDetailsServices
                 AddressLine1 = "123 Test Street",
                 City = "Test City",
                 State = "Test State",
+                VendorType = "product",
                 PostalCode = "12345",
                 Country = "Test Country",
                 TelePhone1 = "123-456-7890",
@@ -50,50 +196,8 @@ namespace UnitTest_VendorDetailsServices
                 }
             };
 
-            var result = vendorDetailsServices.InsertVendorDetails(vendorDetailsRequest);
-
-            // Assert
-            Assert.NotEqual(default, result.Id);
-            //Assert.Equal(vendorDetailsRequest.VendorName, result.VendorName);
-            //Assert.True(result.IsActive);
-            //Assert.Equal(vendorDetailsRequest.AddressLine1, result.AddressLine1);
-            //Assert.Equal(vendorDetailsRequest.AddressLine2, result.AddressLine2);
-            //Assert.Equal(vendorDetailsRequest.City, result.City);
-            //Assert.Equal(vendorDetailsRequest.State, result.State);
-            //Assert.Equal(vendorDetailsRequest.PostalCode, result.PostalCode);
-            //Assert.Equal(vendorDetailsRequest.Country, result.Country);
-            //Assert.Equal(vendorDetailsRequest.TelePhone1, result.TelePhone1);
-            //Assert.Equal(vendorDetailsRequest.TelePhone2, result.TelePhone2);
-            //Assert.Equal(vendorDetailsRequest.VendorEmail, result.VendorEmail);
-            //Assert.Equal(vendorDetailsRequest.VendorWebsite, result.VendorWebsite);
-        }
-       
-        [Fact]
-        public void GetVendorDetails_ReturnsCorrectData()
-        {
-                 var result = vendorDetailsServices.GetVendorDetails();
-                 Assert.NotNull(result);
-                 //Assert.Equal(10, result.Count);
-          }
-
-
-        [Fact]
-        public void DeleteVendor_ReturnsDeletedVendor()
-        {
-           
-
-            var id = "F9472FA7-16BA-4120-40BB-08DB82BFB607";
-            if (Guid.TryParse(id, out Guid vendorId))
-            {
-                var deletedVendor = vendorDetailsServices.DeleteVendor(vendorId);
-                Assert.NotNull(deletedVendor);
-                //Assert.Equal(vendorId, deletedVendor.Id);
-                //Assert.False(deletedVendor.IsActive);
-
-            }
-
-            // Act
-           
+            var result = await vendorDetailsServices.InsertVendorDetails(vendorDetailsRequest);
+            return result;
         }
     }
 }

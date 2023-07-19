@@ -25,14 +25,15 @@ namespace Services
         public async Task<ActionResult<Role>> InsertRole(RoleRequest roleRequest)
         {
             Role role = new Role();
-            if (roleRequest != null)
+            if (roleRequest != null && !string.IsNullOrWhiteSpace(roleRequest.Name))
             {
                 role.Name = roleRequest.Name;
                 role.IsActive = true;
                 await dbContextAccess.Roles.AddAsync(role);
                 await dbContextAccess.SaveChangesAsync();
+                return role;
             }
-            return role;
+            return null;
         }
 
         public async Task<ActionResult<List<Role>>> GetAllRoles()

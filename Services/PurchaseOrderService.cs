@@ -13,7 +13,9 @@ namespace Services
         private readonly DbContextAccess dbContextAccess;
         public ProductPurchaseOrderService productPurchaseOrderService;
         public MailService mailService;
-        public PurchaseOrderService() { }
+        public PurchaseOrderService(DbContextAccess dbContextAccess) {
+            this.dbContextAccess = dbContextAccess;
+                }
         public PurchaseOrderService(DbContextAccess dbContextAccess, IOptions<MailSettings> mailSettings)
         {
             this.dbContextAccess = dbContextAccess;
@@ -206,8 +208,10 @@ namespace Services
                 purchaseOrder.IsActive = false;
                 dbContextAccess.PurchaseOrders.Update(purchaseOrder);
                 await dbContextAccess.SaveChangesAsync();
+                return purchaseOrder;
             }
-            return purchaseOrder;
+            return null;
+            
         }
 
         public async Task<ActionResult<PurchaseOrder>> updatePurchaseOrder(Guid id, PurchaseOrderRequest purchaseOrderRequest)
@@ -263,8 +267,10 @@ namespace Services
                 purchaseOrder.Total = GetTotalAmount(id);
                 dbContextAccess.PurchaseOrders.Update(purchaseOrder);
                 await dbContextAccess.SaveChangesAsync();
+                return purchaseOrder;
             }
-            return purchaseOrder;
+            return null;
+            
         }
         
         public async Task<ActionResult<PurchaseOrder>> UpdateStatus(Guid id, int approverId,string status)

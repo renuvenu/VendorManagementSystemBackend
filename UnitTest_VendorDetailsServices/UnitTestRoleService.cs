@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Model;
 using Model.Requests;
 using Repository;
 using Services;
@@ -15,74 +17,90 @@ namespace UnitTest_VendorDetailsServices
             roleService = new RoleService(dbContextAccess);
         }
         [Fact]
-        public void InsertRole()
+        public async Task InsertRole()
         {
             var roleRequest = new RoleRequest
             {
                 Name = "TestRole"
 
             };
-            var result= roleService.InsertRole(roleRequest);
+            var result= await roleService.InsertRole(roleRequest);
             Assert.NotNull(result);
-            //Assert.Equal(roleRequest.Name, result.Name);
-            //roleService.DeleteRole_Test(result.Id);
+            Assert.Equal(roleRequest.Name, result.Value.Name);
+            roleService.DeleteRole_Test(result.Value.Id);
         }
+
+        
+
         [Fact]
-        public void DeleteRole()
+        public async Task DeleteRole()
         {
-            var RoleId = new Guid("277D3834-89C7-4FC1-3E07-08DB85C066CC");
-            var Result= roleService.DeleteRole(RoleId);
+            var Role =await InsertRole_Test();
+            var Result= await roleService.DeleteRole(Role.Value.Id);
             Assert.NotNull(Result);
-            //Assert.Equal(RoleId, Result.Id);
+            Assert.False(Result.Value.IsActive);
+            roleService.DeleteRole_Test(Role.Value.Id);
+        }
+
+      
+
+        [Fact]
+        public async void GetAllRoles()
+        {
+            var Result = await roleService.GetAllRoles();
+            Assert.NotNull(Result);
+            Assert.NotEmpty(Result.Value);
         }
 
         [Fact]
-        public void GetAllRoles()
+        public async Task GetRoleById()
         {
-            var Result = roleService.GetAllRoles();
+            var Role = await InsertRole_Test();
+            var Result=await roleService.GetRoleById(Role.Value.Id);
             Assert.NotNull(Result);
-            //Assert.NotEmpty(Result);
+            Assert.Equal(Role.Value.Id, Result.Value.Id);
+            roleService.DeleteRole_Test(Role.Value.Id);
         }
 
-        [Fact]
-        public void GetRoleById()
+        public async Task<ActionResult<Role>> InsertRole_Test()
         {
-            var RoleId = new Guid("6163955B-E69B-40AB-287E-08DB85C04932");
-            var Result=roleService.GetRoleById(RoleId);
-            Assert.NotNull(Result);
-            //Assert.Equal((Guid)RoleId, Result.Id);
+            var roleRequest = new RoleRequest
+            {
+                Name = "TestRole"
+
+            };
+            var result = await roleService.InsertRole(roleRequest);
+            return result;
         }
 
         // Negative Tests
         [Fact]
-        public void GetRoleById_Invalid() 
+        public async Task GetRoleById_Invalid() 
         {
             var RoleId = new Guid("6163950B-E69B-40AB-287E-08DB85C04932");
-            var Result = roleService.GetRoleById(RoleId);
-            Assert.Null(Result);
+            var Result = await roleService.GetRoleById(RoleId);
+            Assert.Null(Result.Value);
     
         }
         [Fact]
-        public void DeleteRole_InvalidId()
+        public async Task DeleteRole_InvalidId()
         {
             var RoleId = new Guid("277D1834-89C7-4FC1-3E07-08DB85C066CC");
-            var Result = roleService.DeleteRole(RoleId);
-            Assert.Null(Result);
+            var Result = await roleService.DeleteRole(RoleId);
+            Assert.Null(Result.Value);
             
         }
 
         [Fact]
-        public void InsertRole_InvalidDetails()
+        public async Task InsertRole_InvalidDetails()
         {
             var roleRequest = new RoleRequest
             {
                 Name = ""
 
             };
-            var result = roleService.InsertRole(roleRequest);
-            Assert.NotNull(result);
-            //Assert.Equal("", result.Name);
-            // roleService.DeleteRole_Test(result.Id);
+            var result = await roleService.InsertRole(roleRequest);
+            Assert.Null(result);
         }
     }
 }

@@ -40,7 +40,7 @@ namespace Services
             
                     ProductDetail productDetail = new ProductDetail();
                     VendorDetails vendorDetails = new VendorDetails();
-                    vendorDetails.Id = new Guid();
+                    vendorDetails.Id = Guid.NewGuid();
                   vendorDetails.VendorName = vendorDetailsRequest.VendorName;
                     vendorDetails.IsActive = true;
                     vendorDetails.AddressLine1 = vendorDetailsRequest.AddressLine1;
@@ -117,14 +117,16 @@ namespace Services
 
         public async Task<ActionResult<VendorDetailswithProductDetailsRequest>> GetVendor(Guid id)
         {
-            var vendorWithProductDetails = await dbContextAccess.VendorDetails
-                .Where(v => v.Id == id && v.IsActive)
-                .Select(vendor => new VendorDetailswithProductDetailsRequest
-                {
-                    VendorDetails = vendor,
-                    ProductDetails = dbContextAccess.productDetails.Where(p => p.VendorId == vendor.Id && p.IsActive).ToList()
-                })
-                .SingleOrDefaultAsync();
+            try
+            {
+                var vendorWithProductDetails = await dbContextAccess.VendorDetails
+                    .Where(v => v.Id == id && v.IsActive)
+                    .Select(vendor => new VendorDetailswithProductDetailsRequest
+                    {
+                        VendorDetails = vendor,
+                        ProductDetails = dbContextAccess.productDetails.Where(p => p.VendorId == vendor.Id && p.IsActive).ToList()
+                    })
+                    .SingleOrDefaultAsync();
                 if (vendorWithProductDetails != null && vendorWithProductDetails.ProductDetails.Count() > 0)
                 {
                     vendorWithProductDetails.ProductDetails.ForEach(productDetails =>
@@ -132,15 +134,22 @@ namespace Services
                         productDetails.VendorDetails = null;
                     });
                 }
-                
-            return vendorWithProductDetails;
+
+                return vendorWithProductDetails;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
 
         }
 
         public async Task<ActionResult<VendorDetailswithProductDetailsRequest>> UpdateVendor(Guid id, VendorDetailsUpdateRequest vendorDetailsUpdateRequest)
             {
-            VendorDetails vendorDetails = dbContextAccess.VendorDetails.FirstOrDefault(v => v.Id == id && v.IsActive);
-                if(vendorDetails != null)
+            try
+            {
+                VendorDetails vendorDetails = dbContextAccess.VendorDetails.FirstOrDefault(v => v.Id == id && v.IsActive);
+                if (vendorDetails != null)
                 {
                     vendorDetails.VendorName = vendorDetailsUpdateRequest.VendorName;
                     vendorDetails.AddressLine1 = vendorDetailsUpdateRequest.AddressLine1;
@@ -156,12 +165,12 @@ namespace Services
                     vendorDetails.VendorWebsite = vendorDetailsUpdateRequest.VendorWebsite;
                     vendorDetails.UpdatedOn = DateTime.Now.ToString();
                     dbContextAccess.VendorDetails.Update(vendorDetails);
-                dbContextAccess.SaveChanges();
+                    dbContextAccess.SaveChanges();
 
                     List<Guid> ids = new List<Guid>();
                     dbContextAccess.productDetails.ToList().ForEach(prod =>
                     {
-                        if(prod.VendorId == id)
+                        if (prod.VendorId == id)
                         {
                             ids.Add(prod.Id);
                         }
@@ -169,19 +178,20 @@ namespace Services
 
                     vendorDetailsUpdateRequest.ProductDetailsRequest.ForEach(product =>
                     {
-                        var prod = dbContextAccess.productDetails.Where(p => p.Id  == product.Id).FirstOrDefault();
-                        if(prod != null)
+                        var prod = dbContextAccess.productDetails.Where(p => p.Id == product.Id).FirstOrDefault();
+                        if (prod != null)
                         {
                             ids.Remove(prod.Id);
-       
+
                             prod.Price = product.Price;
                             prod.ProductName = product.ProductName;
                             prod.ProductDescription = product.ProductDescription;
                             prod.IsActive = (bool)product.IsActive;
-                            dbContextAccess.productDetails.Update(prod); 
+                            dbContextAccess.productDetails.Update(prod);
                             dbContextAccess.SaveChanges();
 
-                        } else
+                        }
+                        else
                         {
                             InsertProductDetailRequest insertProductDetailRequest = new InsertProductDetailRequest();
                             insertProductDetailRequest.VendorId = id;
@@ -197,11 +207,36 @@ namespace Services
                         productDetailsService.DeleteProductDetail(id);
                     });
 
-               
+
                 }
                 return await GetVendor(id);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
 
         }
+
+        public async Task DeleteVendor_Test(Guid id)
+        {
+            var vendor = await dbContextAccess.VendorDetails.FirstOrDefaultAsync(p => p.Id == id);
+            if (vendor != null)
+            {
+                dbContextAccess.VendorDetails.Remove(vendor);
+                await dbContextAccess.SaveChangesAsync();
+
+                List<ProductDetail> productDetails = await dbContextAccess.productDetails
+                    .Where(product => product.VendorId == id)
+                    .ToListAsync();
+
+                productDetails.ForEach(prod =>
+                {
+                    productDetailsService.DeleteProductDetail_Test(prod.Id);
+                });
+            }
+        }
+
     }
 
 

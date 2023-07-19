@@ -45,7 +45,7 @@ namespace Services
         {
             
                 User user = new User();
-                if (userRegisterRequest != null && dbContextAccess.Users.Where(x => x.Email == userRegisterRequest.Email).ToList().Count() == 0)
+                if (userRegisterRequest != null && userRegisterRequest.Email!=null && dbContextAccess.Users.Where(x => x.Email == userRegisterRequest.Email).ToList().Count() == 0)
                 {
                     user.Name = userRegisterRequest.Name;
                     user.Email = userRegisterRequest.Email;
@@ -150,11 +150,14 @@ namespace Services
                 mailRequest.Subject = "Regarding role updated by admin";
                 mailRequest.Body = $"Your role is update to {user.Role.Name} by admin";
                 mailService.SendEmailAsync(mailRequest);
+                return user;
             }
-            return user;
+            return null;
+           
         }
         public async Task<ActionResult<User>> DeleteUser(int id,int deletedBy)
         {
+            
             var user =await dbContextAccess.Users.FindAsync(id);
             if (user != null)
             {
@@ -163,8 +166,9 @@ namespace Services
                 user.DeletedOn = DateTime.Now.ToString();
                 dbContextAccess.Users.Update(user);
                 await dbContextAccess.SaveChangesAsync();
+                return user;
             }
-            return user;
+            return null;
         } 
 
         public void DeleteUser_Test(int id)
@@ -173,6 +177,7 @@ namespace Services
             if (vendor != null)
             {
                 dbContextAccess.Users.Remove(vendor);
+                dbContextAccess.SaveChanges();
 
             }
 
