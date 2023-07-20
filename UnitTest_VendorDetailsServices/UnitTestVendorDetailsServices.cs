@@ -29,10 +29,34 @@ namespace UnitTest_VendorDetailsServices
         [Fact]
         public async Task InsertVendorDetails_ValidRequest_ReturnsVendorDetails()
         {
-            
-            var result =  await InsertVendorDetails_Test(); 
 
-            // Assert
+            
+                var vendorDetailsRequest = new VendorDetailsRequest
+            {
+                VendorName = "Test Vendor",
+                AddressLine1 = "123 Test Street",
+                City = "Test City",
+                State = "Test State",
+                VendorType = "product",
+                PostalCode = "12345",
+                Country = "Test Country",
+                TelePhone1 = "123-456-7890",
+                VendorEmail = "test@example.com",
+                VendorWebsite = "https://www.testvendor.com",
+                ProductDetailsRequest = new List<InsertProductDetailRequest>
+                {
+                    new InsertProductDetailRequest
+                    {
+                        Price = 110,
+                        ProductDescription = "xyzProduct",
+                        ProductName = "XYZ"
+                    }
+                }
+            };
+
+            var result = await vendorDetailsServices.InsertVendorDetails(vendorDetailsRequest);
+
+
             Assert.NotEqual(default, result.Value.Id);
             Assert.Equal(result.Value.VendorName, result.Value.VendorName);
             Assert.True(result.Value.IsActive);
@@ -60,14 +84,24 @@ namespace UnitTest_VendorDetailsServices
         public async Task GetVendorDetails_ReturnsCorrectData()
         {
                     
-                 var insertVendor = await InsertVendorDetails_Test();
+                 
                  var result = await vendorDetailsServices.GetVendorDetails();
                  Assert.NotNull(result);
                  Assert.NotEmpty(result.Value);
-                 await vendorDetailsServices.DeleteVendor_Test(insertVendor.Value.Id);
+                 
 
            
-        } 
+        }
+
+        [Fact]
+        public async Task CountOfVendors()
+        {
+            var insertVendor = await InsertVendorDetails_Test();
+            var result= await dbContextAccess.VendorDetails.Where(x => x.IsActive).CountAsync();
+            Assert.NotNull(result);
+            Assert.True(result>0);
+            await vendorDetailsServices.DeleteVendor_Test(insertVendor.Value.Id);
+        }
 
         [Fact]
         public async Task DeleteVendor_ReturnsDeletedVendor()

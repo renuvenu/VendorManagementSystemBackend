@@ -118,7 +118,17 @@ namespace UnitTest_VendorDetailsServices
             userService.DeleteUser_Test(deletedBy);
 
         }
+        [Fact]
+        public async Task GetAllUsers()
+        {
+            var user =await InsertUser_Test();
+            var result = await userService.GetUsers();
+            Assert.NotNull(result);
+            Assert.NotEmpty(result.Value);
+             userService.DeleteUser_Test(user.Value.Id);
 
+        }
+       
 
 
 

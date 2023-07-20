@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Model.Requests;
+﻿using Repository;
 using Model;
-using Repository;
-using Services;
+using Model.Requests;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Services;
 
 namespace UnitTest_VendorDetailsServices
 {
@@ -18,9 +19,11 @@ namespace UnitTest_VendorDetailsServices
         public MailService mailService;
         public IOptions<MailSettings> mailSettings;
 
+
         public UnitTestPurchaseOrderServices()
         {
 
+            this.mailSettings = mailSettings;
             dbContextAccess = new DbContextAccess(new DbContextOptions<DbContextAccess>());
             productDetailsService = new ProductDetailsService(dbContextAccess);
             purchaseOrderService = new PurchaseOrderService(dbContextAccess);
@@ -34,13 +37,14 @@ namespace UnitTest_VendorDetailsServices
         //[Fact]
         //public async Task InsertPurchaseOrder_InsertPurchaseOrderAndProducts()
         //{
+
         //    var insertVendor = await unitTestVendorDetailsService.InsertVendorDetails_Test();
         //    var result = await vendorDetailsServices.GetVendor(insertVendor.Value.Id);
         //    var firstProduct = result.Value.ProductDetails[0];
         //    // Arrange
         //    var purchaseOrderRequest = new PurchaseOrderRequest
         //    {
-        //        CreatedBy=1,
+        //        CreatedBy = 1,
         //        BillingAddress = "123 Billing St",
         //        BillingAddressCity = "Billing City",
         //        BillingAddressState = "Billing State",
@@ -57,14 +61,14 @@ namespace UnitTest_VendorDetailsServices
         //    {
         //        new InsertProductPurchaseRequest
         //        {
-        //            VendorId= new Guid("CA1F0E22-F1B5-47C1-B3CA-3B54D01333EE"),
+        //            VendorId= insertVendor.Value.Id,
         //            PurchaseOrderId=new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa6"),
-        //            ProductId = new Guid("F092D87E-1BAE-44AB-949E-08DB886BF134"),
+        //            ProductId =firstProduct.Id,
         //            Quantity = 10
         //          }
         //    }
         //    };
-        //    var insertPurchaseOrderResult= await purchaseOrderService.InsertPurchaseOrder(purchaseOrderRequest);
+        //    var insertPurchaseOrderResult = await purchaseOrderService.InsertPurchaseOrder(purchaseOrderRequest);
         //    Assert.NotNull(insertPurchaseOrderResult);
         //    //Assert.True(result.IsActive);
         //}
@@ -132,8 +136,50 @@ namespace UnitTest_VendorDetailsServices
             var result = purchaseOrderService.DeletePurchaseOrder(PurchaseOrderId);
           
 ;            Assert.NotNull(result);
-        }  
-
+        }
+        [Fact]
+        public async Task GetAllPendingPurchaseOrderofaUser()
+        {
+            var result = await purchaseOrderService.GetAllPendingRequestsOfaUser(2047);
+            Assert.NotNull(result);
+            Assert.NotEmpty(result.Value);
+        }
+        [Fact]
+        public async Task GetAllPendingPurchaseOrder()
+        {
+            var result = await purchaseOrderService.GetAllPendingPurchaseOrders();
+            Assert.NotNull(result);
+            Assert.NotEmpty(result.Value);
+        }
+        [Fact]
+        public  void  GetMonthlyExpense()
+        {
+            var result=purchaseOrderService.GetCurrentMonthExpense();
+            Assert.NotNull(result);
+            Assert.True(result>0);
+        }
+        [Fact]
+        public async Task GetYearlyExpense()
+        {
+            var result=await purchaseOrderService.GetCurrentYearExpense();
+            decimal Expense = (decimal)result.Value;
+            Assert.NotNull(result);
+            Assert.True(Expense>0);
+        }
+        [Fact]
+        public async Task GetListOfExpensesForMonth()
+        {
+            var result=await purchaseOrderService.GetListOfExpensesForMonth();
+            Assert.NotNull(result);
+            Assert.NotEmpty(result.Value);
+        }
+        [Fact]
+        public async Task GetCountOfPendingRequests()
+        {
+            var result = await purchaseOrderService.GetCountOfAllPendingPurchaseOrders();
+            Assert.NotNull(result);
+            Assert.True(result.Value > 0);
+        }
 
 
 
