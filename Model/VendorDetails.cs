@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 public enum VendorType
 {
-    Service,
-    Product,
-    Service_and_Product
+    Service=0,
+    Product=1,
+    Service_and_Product=2
 }
 namespace Model
 {
@@ -24,7 +24,7 @@ namespace Model
         [Required]
         public bool IsActive { get; set; }
         [Required]
-        public VendorType VendorType { get; set; }
+        public string VendorType { get; set; }
         [Required]
         public string? AddressLine1 { get; set; }
         public string? AddressLine2 { get; set; }

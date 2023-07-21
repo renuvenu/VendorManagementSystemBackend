@@ -19,9 +19,9 @@ namespace VendorManagement_WebApi.Controllers
         [HttpPost]
         public async Task<IActionResult> InsertRole(RoleRequest roleRequest)
         {
-            var role = RoleService.InsertRole(roleRequest);
-            if (role != null) { 
-                return Ok(role);
+            var role =await RoleService.InsertRole(roleRequest);
+            if (role.Value != null) { 
+                return Ok(role.Value);
             }
             return BadRequest("Invalid role");
         }
@@ -29,17 +29,18 @@ namespace VendorManagement_WebApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllRoles()
         {
-            return Ok(RoleService.GetAllRoles());
+            var roles = await RoleService.GetAllRoles();
+            return Ok(roles.Value);
         }
 
         [HttpGet]
         [Route("{id:guid}")]
         public async Task<IActionResult> GetRoleById([FromRoute] Guid id)
         {
-            var role = RoleService.GetRoleById(id);
-            if (role != null)
+            var role =await RoleService.GetRoleById(id);
+            if (role.Value != null && role.Value.Id == id)
             {
-                return Ok(role);
+                return Ok(role.Value);
             }
             return NotFound("Role not found");
         }
@@ -48,10 +49,10 @@ namespace VendorManagement_WebApi.Controllers
         [Route("{id:guid}")]
         public async Task<IActionResult> DeleteRole([FromRoute] Guid id)
         {
-            var role = RoleService.DeleteRole(id);
-            if (role != null)
+            var role = await RoleService.DeleteRole(id);
+            if (role.Value != null && role.Value.Id == id)
             {
-                return Ok(role);
+                return Ok(role.Value);
             }
             return NotFound("Role not found");
         }

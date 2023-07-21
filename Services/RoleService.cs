@@ -1,4 +1,6 @@
-﻿using Model;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Model;
 using Model.Requests;
 using Repository;
 using System;
@@ -20,39 +22,49 @@ namespace Services
 
         public RoleService() { }
 
-        public Role InsertRole(RoleRequest roleRequest)
+        public async Task<ActionResult<Role>> InsertRole(RoleRequest roleRequest)
         {
             Role role = new Role();
             if (roleRequest != null)
             {
                 role.Name = roleRequest.Name;
                 role.IsActive = true;
-                dbContextAccess.Roles.Add(role);
-                dbContextAccess.SaveChanges();
+                await dbContextAccess.Roles.AddAsync(role);
+                await dbContextAccess.SaveChangesAsync();
             }
             return role;
         }
 
-        public List<Role> GetAllRoles()
+        public async Task<ActionResult<List<Role>>> GetAllRoles()
         {
-            return dbContextAccess.Roles.Where(role => role.IsActive).ToList();  
+            return await dbContextAccess.Roles.Where(role => role.IsActive).ToListAsync();  
         }
 
-        public Role GetRoleById(Guid id)
+        public async Task<ActionResult<Role>> GetRoleById(Guid id)
         {
-            return dbContextAccess.Roles.FirstOrDefault(r => r.Id == id && r.IsActive);
+            return await dbContextAccess.Roles.FirstOrDefaultAsync(r => r.Id == id && r.IsActive);
         }
 
-        public Role DeleteRole(Guid id)
+        public async Task<ActionResult<Role>> DeleteRole(Guid id)
         {
-            var role = dbContextAccess.Roles.Find(id);
+            var role = await dbContextAccess.Roles.FindAsync(id);
             if (role != null)
             {
                 role.IsActive = false;
                 dbContextAccess.Roles.Update(role);
-                dbContextAccess.SaveChanges();
+                await dbContextAccess.SaveChangesAsync();
             }
             return role;
+        } 
+
+        public void DeleteRole_Test(Guid id)
+        {
+            var role = dbContextAccess.Roles.Find(id);
+            if (role != null)
+            {
+                dbContextAccess.Roles.Remove(role);
+                dbContextAccess.SaveChanges();
+            }
         }
     }
 }

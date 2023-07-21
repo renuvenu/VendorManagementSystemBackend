@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Model;
 using Model.Requests;
 using Repository;
@@ -14,15 +15,16 @@ namespace VendorManagement_WebApi.Controllers
     {
         public UserService userService;
 
-        public UserController(DbContextAccess dbContextAccess,IConfiguration configuration) { 
-            userService = new UserService(dbContextAccess,configuration);
+        public UserController(DbContextAccess dbContextAccess,IConfiguration configuration, IOptions<MailSettings> mailSettings) { 
+            userService = new UserService(dbContextAccess,configuration, mailSettings);
         }
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> getAllUsers()
         {
-            return Ok(userService.GetUsers());
+            var users = await userService.GetUsers();
+            return Ok(users.Value);
         }
 
         [HttpGet]
@@ -54,12 +56,12 @@ namespace VendorManagement_WebApi.Controllers
         [HttpPost]
         public async Task<IActionResult> InsertUser(UserRegisterRequest userRegisterRequest)
         {
-            User user = userService.InsertUser(userRegisterRequest);
-            if(user != null && user.Id > 0)
+            var user = await userService.InsertUser(userRegisterRequest);
+            if (user.Value != null && user.Value.Id > 0)
             {
-                return Ok(user);
+                return Ok(user.Value);
             }
-           return BadRequest("Invalid user request");
+            return BadRequest("Invalid user request");
         }
 
         [AllowAnonymous]
@@ -70,7 +72,7 @@ namespace VendorManagement_WebApi.Controllers
             var user = userService.LoginUser(loginRequest);
             if(user.User != null && user.User.Id > 0)
             {
-                return Ok(userService.LoginUser(loginRequest));
+                return Ok(user.Value);
             }
             return NotFound("User not found");
         }
@@ -81,7 +83,11 @@ namespace VendorManagement_WebApi.Controllers
         [Authorize(Roles = "Admin,Approver")]
         public async Task<IActionResult> UpdateUser([FromRoute] int id,UserRegisterRequest userRegisterRequest)
         {
-            return Ok();
+            var user = await userService.UpdateUser(id, UserUpdateRequest);
+            if(user.Value !=null && user.Value.Id > 0) { 
+                return Ok(user.Value); 
+            }
+            return BadRequest("Invalid request");
         }
 
         [HttpPut]
@@ -89,11 +95,11 @@ namespace VendorManagement_WebApi.Controllers
         [Authorize(Roles = "Admin,Approver")]
         public async Task<IActionResult> UpdateApprovalStatus([FromRoute] int id, [FromRoute] int approverId, [FromRoute] string status)
         {
-            var user = userService.UpdateApprovalStatus(id,approverId,status);
+            var user = await userService.UpdateUserRole(id,role);
 
-            if(user !=null && user.Id > 0)
+            if(user.Value !=null && user.Value.Id > 0)
             {
-                return Ok(user);
+                return Ok(user.Value);
             }
             return NotFound("User not found");
         }
@@ -103,10 +109,10 @@ namespace VendorManagement_WebApi.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUser([FromRoute] int id, [FromRoute] int deletedBy)
         {
-           var user = userService.DeleteUser(id, deletedBy);
-            if(user != null)
+           var user = await userService.DeleteUser(id, deletedBy);
+            if(user.Value != null && user.Value.Id > 0)
             {
-                return Ok(user);
+                return Ok(user.Value);
             }
             return NotFound("user not found");
         }
