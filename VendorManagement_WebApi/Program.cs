@@ -24,7 +24,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 //builder.Services.AddDbContext<DbContextAccess>(ServiceLifetime.Transient);
-builder.Services.AddScoped<InterfaceVendorDetailsService, VendorDetailsServices>();
 builder.Services.AddAuthentication("Bearer").AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters

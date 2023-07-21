@@ -103,9 +103,7 @@ namespace Services
         {
             List<Claim> claims = new List<Claim> {
                 new Claim(ClaimTypes.Email, user.Email),
-
-                new Claim(ClaimTypes.Role, "Admin"),
-                new Claim(ClaimTypes.Role, "User"),
+                new Claim(ClaimTypes.Role, user.Role.Name)
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF32.GetBytes(
